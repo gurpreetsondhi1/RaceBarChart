@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Race Bar and Line Chart Visualization of BVY and DOV Product Trends Across Countries</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: floralwhite;
+        }
+
+
+        #charts-container {
+            display: flex;
+            /* Makes the container a flexbox */
+            justify-content: space-between;
+            /*flex-direction: column;
+            /* Spaces out the charts evenly */
+            align-items: flex-start;
+            /* Aligns the charts at the top */
+            margin-top: 30px;
+            /* Adds a bit of space above the charts */
+        }
+
+        #chart {
+            width: 48%;
+            /* Each chart will take 48% of the container width */
+        }
+
+        #lineChartContainer {
+            width: 40%;
+            margin-left: -20px;
+            display: flex;
+            flex-direction: column;
+            /* Ensures that the line chart description stays below the line chart */
+        }
+
+        #chart,
+        #lineChart {
+            margin-top: 30px;
+        }
+
+        .label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .month-label {
+            font-size: 22px;
+            font-weight: bold;
+            text-anchor: start;
+        }
+
+        .count-label {
+            font-size: 32px;
+            font-weight: bold;
+            text-anchor: middle;
+        }
+
+        .code {
+            font-size: 22px;
+            font-weight: bold;
+            text-anchor: middle;
+        }
+
+        .line {
+            fill: none;
+            stroke-width: 4;
+        }
+
+        .axis text {
+            font-size: 12px;
+            /* Adjust font size if needed */
+            text-anchor: middle;
+        }
+
+        .axis tspan {
+            font-size: 12px;
+            /* Control the size of both month and year text */
+        }
+
+        .actionsDiv {
+            margin: 20px 0px;
+            display: flex;
+            gap: 32px;
+        }
+
+        .uploadFile {
+            height: 50px;
+            /* Set the desired height */
+            padding: 5px;
+            /* Adjust padding if necessary */
+            font-size: 16px;
+            /* Optional: Increase font size */
+            border-radius: 5px;
+            /* Optional: Add rounded corners */
+            cursor: pointer;
+        }
+        .active{
+            opacity: 1;
+        }
+
+        .actionsDiv button {
+            padding: 8px 16px;
+            border-radius: 8px;
+            min-width: 120px;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .actionsDiv button:hover {
+            opacity: 1;
+        }
+
+        .actionsDiv #runButton {
+            background-color: #d77777;
+        }
+
+        .actionsDiv #pauseButton {
+            background-color: #7fcf7f;
+        }
+    </style>
+</head>
+
+<body style="background-color:floralwhite;">
+    <h1>Dynamic Race Bar and Line Chart Visualization of BVY and DOV Product Trends Across Countries</h1>
+    <p>This interactive visualization combines a <b>Race Bar Chart</b> and a <b>Line Chart</b> to track the performance of two pharmaceutical products, <b>BVY</b> and <b>DOV</b>, across various countries. The race bar chart dynamically shows which product is leading in each country month by month, represented by country flags for easy identification. Countries such as <b>Belgium</b>, <b>Poland</b>, and <b>Austria</b> are highlighted with their respective flags, while the <b>BVY</b> and <b>DOV</b> product icons show which drug is dominant in a given month. Simultaneously, the line chart tracks the overall <b>BVY</b> product trend, visually illustrating the cumulative performance over time. This dual representation provides a powerful way to monitor both country-specific and overall product performance trends, making it an invaluable tool for product tracking and decision-making in the pharmaceutical industry.</p>
+
+    <input class="uploadFile" height="60px" type="file" id="upload" accept=".xlsx, .xls, .csv" />
+    <div class="actionsDiv">
+        <button id="runButton">Run</button>
+        <button id="pauseButton">Pause</button>
+    </div>
+
+    <div id="charts-container">
+        <div id="chart"></div>
+        <div id="lineChartContainer">
+            <h2>BVY Product Trends Over Time</h2>
+            <div id="lineChart"></div>
+            <div id="lineChartDescription">This line chart visualizes the BVY product performance over time, based on
+                the data from the Excel sheet.</div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        const countryFlags = {
+            "Belgium": "images/Belgium.png",
+            "Poland": "images/Poland.png",
+            "Austria": "images/Austria.png",
+            "Greece": "images/Greece.png",
+            "Sweden": "images/Sweden.png",
+            "Norway": "images/Norway.png",
+            "Israel": "images/Israel.png",
+            "Czech": "images/Czech.png",
+            "Romania": "images/Romania.png",
+            "Denmark": "images/Denmark.png",
+            "Finland": "images/Finland.png",
+            "Switzerland": "images/Switzerland.png",
+            "Portugal": "images/Portugal.png",
+            "Netherlands": "images/Netherlands.png",
+            "EDM": "images/EDM.png",
+        };
+        const Codes = {
+            "Belgium": "BE",
+            "Poland": "PL",
+            "Austria": "AT",
+            "Greece": "GR",
+            "Sweden": "SE",
+            "Norway": "NO",
+            "Israel": "IL",
+            "Czech": "CZ",
+            "Romania": "RO",
+            "Denmark": "DK",
+            "Finland": "FI",
+            "Switzerland": "CH",
+            "Portugal": "PT",
+            "Netherlands": "NL",
+            "EDM": "EDM",
+        };
+
+        // Handle file upload and read Excel data
+        document.getElementById('upload').addEventListener('change', handleFile, false);
+
+        function handleFile(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+                const data = new Uint8Array(event.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+                const jsonData = XLSX.utils.sheet_to_json(sheet);
+                console.log("jsonData==",)
+
+                processData(jsonData);
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        function processData(data) {
+            const transformedData = [];
+            const monthYear = { "2023": [], "2024": [] }
+            const monthNames = [
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+
+            data.forEach(d => {
+                let month;
+
+                if (typeof d.Month === "string") {
+                    const [monthStr, day, year] = d.Month.split("-");
+                    month = new Date(year, monthStr - 1, day); // Adjust if needed based on format
+
+                } else if (typeof d.Month === "number") {
+                    month = new Date((d.Month - (25567 + 2)) * 86400 * 1000); // Excel serial date
+                } else if (d.Month instanceof Date) {
+                    month = d.Month; // It's already a Date object
+                } else {
+                    console.error("Unknown date format", d.Month);
+                    return; // Skip this row
+                }
+                if (!monthYear[month.getFullYear()].includes(monthNames[month.getMonth()])) {
+                    monthYear[month.getFullYear()].push(monthNames[month.getMonth()])
+                }
+
+                const maxProduct = d.BVY > d.DOV ? "BVY" : "DOV";
+                transformedData.push({
+                    month: month,
+                    country: d.Country,
+                    product: maxProduct,
+                    value: d[maxProduct]
+                });
+            });
+
+            console.log(transformedData);  // Log the final transformed data for verification
+            console.log("monthYear", monthYear);  // Log the final transformed data for verification
+
+            renderRaceChart(transformedData);
+        }
+
+        // Set up the chart dimensions and scales
+        const margin = { top: 80, right: 30, bottom: 40, left: 100 },
+            baseWidth = 960 * 0.7,
+            baseHeight = 600 * 0.7,
+            width = baseWidth - margin.left - margin.right,
+            height = baseHeight - margin.top - margin.bottom;
+
+        const svg = d3.select("#chart")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const x = d3.scaleLinear().range([0, width]);
+        const y = d3.scaleBand().range([0, height]).padding(0.1);
+        const color = d3.scaleOrdinal()
+            .domain(["BVY", "DOV"])
+            .range(["#c32148", "#ff66cc"]);
+
+        const formatMonth = d3.timeFormat("%b %Y");
+
+        let animationRunning = true; // Flag to track the animation state
+        let animationTimeout; // To keep track of the timeout for pausing and resuming
+        let pausedAt=null;
+        let ispaused=false;
+
+
+
+        function update(data, currentMonth) {
+            x.domain([0, 100]);
+            y.domain(data.map(d => d.country));
+
+            // Clear previous chart elements
+            svg.selectAll(".label").remove();
+            svg.selectAll(".icon").remove();
+            svg.selectAll(".monthlabel").remove();
+            svg.selectAll(".count-label").remove();
+            svg.selectAll(".image-label").remove();
+            svg.selectAll(".flag").remove();
+            svg.selectAll(".code").remove();
+
+            // Calculate counts for BVY and DOV
+            const bvyCount = data.filter(d => d.product === "BVY" && d.value !== 0).length;
+            const dovCount = data.filter(d =>
+                d.product === "DOV" &&
+                d.value !== undefined &&
+                d.value !== null).length;
+
+            // Update or add month label
+            const monthLabel = svg.selectAll(".month-label")
+                .data([currentMonth]);
+
+            monthLabel.enter().append("text")
+                .attr("class", "month-label")
+                .attr("x", width / 2)
+                .attr("y", -24)
+                .attr("text-anchor", "start")
+                .attr("fill", "#393A3F")
+                .merge(monthLabel)
+                .text(`Month: ${formatMonth(currentMonth)}`)
+                .transition().duration(300)
+                .text(`Month: ${formatMonth(currentMonth)}`);
+
+            monthLabel.exit().remove();
+
+            // Display the counts for BVY and DOV with images
+            svg.append("image")
+                .attr("class", "image-label")
+                .attr("x", width - 580)
+                .attr("y", -60)
+                .attr("width", 50)
+                .attr("height", 50)
+                .attr("xlink:href", "images/Bvy.png");
+
+            svg.append("text")
+                .attr("class", "count-label")
+                .attr("x", width - 530)
+                .attr("y", -24)
+                .attr("fill", "#c32148")
+                .attr("text-anchor", "middle")
+                .text(":");
+
+            svg.append("text")
+                .attr("class", "count-label")
+                .attr("x", width - 510)
+                .attr("y", -22)
+                .attr("fill", "#c32148")
+                .attr("text-anchor", "middle")
+                .text(bvyCount);
+
+            svg.append("image")
+                .attr("class", "image-label")
+                .attr("x", width - 480)
+                .attr("y", -60)
+                .attr("width", 50)
+                .attr("height", 50)
+                .attr("xlink:href", "images/Dovato.png");
+
+            svg.append("text")
+                .attr("class", "count-label")
+                .attr("x", width - 425)
+                .attr("y", -24)
+                .attr("fill", "#ff66cc")
+                .attr("text-anchor", "middle")
+                .text(":", dovCount);
+
+            svg.append("text")
+                .attr("class", "count-label")
+                .attr("x", width - 410)
+                .attr("y", -22)
+                .attr("fill", "#ff66cc")
+                .attr("text-anchor", "middle")
+                .text(dovCount);
+
+            // Update bars
+            const bars = svg.selectAll(".bar")
+                .data(data, d => d.country);
+
+            bars.enter().append("rect")
+                .attr("class", "bar")
+                .attr("y", d => y(d.country) - 20)
+                .attr("height", y.bandwidth() * 0.8)
+                .attr("x", 0)
+                .attr("width", d => x(d.value))
+                .attr("fill", d => color(d.product))
+                .merge(bars)
+                .transition().duration(500)
+                .ease(d3.easeLinear)
+                .attr("fill", d => color(d.product))
+                .attr("width", d => x(d.value))
+                .attr("y", d => y(d.country));
+
+            bars.exit()
+                .transition()
+                .duration(500)
+                .attr("width", 0)
+                .remove();
+
+            // Update labels
+            const labels = svg.selectAll(".label")
+                .data(data, d => d.country);
+
+            labels.enter().append("text")
+                .attr("class", "label")
+                .attr("y", d => y(d.country) + (y.bandwidth() - 30) / 2)
+                .attr("x", d => {
+                    const xValue = x(d.value);
+                    return isNaN(xValue) ? 0 : xValue + 25;
+                })
+                .attr("dy", ".55em")
+                .attr("fill", d => color(d.product))
+                .text(d => {
+                    if (d.value !== null && d.value !== undefined && d.value !== "") {
+                        return `${d3.format(".1%")(d.value / 100)}`;
+                    } else {
+                        return "";
+                    }
+                })
+                .merge(labels)
+                .transition().duration(500)
+                .ease(d3.easeLinear)
+                .attr("x", d => {
+                    const xValue = x(d.value);
+                    return isNaN(xValue) ? 0 : xValue + 25;
+                })
+                .text(d => {
+                    if (d.value !== null && d.value !== undefined && d.value !== "") {
+                        return `${d3.format(".1%")(d.value / 100)}`;
+                    } else {
+                        return "";
+                    }
+                });
+
+            labels.exit()
+                .transition()
+                .duration(500)
+                .attr("fill", d => color(d.product))
+                .ease(d3.easeLinear)
+                .remove();
+
+            // Update icons
+            const icons = svg.selectAll(".icon")
+                .data(data, d => d.country);
+
+            icons.enter().append("image")
+                .attr("class", "icon")
+                .attr("x", d => 450)
+                .attr("y", d => y(d.country) + (y.bandwidth() - 80) / 2)
+                .attr("width", 50)
+                .attr("height", 55)
+                .attr("xlink:href", d => d.product === "BVY" ? "images/Bvy.png" : "images/Dovato.png")
+                .on("error", function () {
+                    console.error("Image failed to load: " + d3.select(this).attr("xlink:href"));
+                })
+                .merge(icons)
+                .transition().duration(500)
+                .ease(d3.easeExp)
+                .attr("x", 450);
+
+            icons.exit()
+                .transition()
+                .duration(500)
+                .ease(d3.easeExp)
+                .remove();
+
+            // Update flags
+            const flagSelection = svg.selectAll(".flag")
+                .data(data, d => d.country);
+
+            flagSelection.enter().append("image")
+                .attr("class", "flag")
+                .attr("x", -50)
+                .attr("y", d => y(d.country) + (y.bandwidth() - 55) / 2)
+                .attr("width", 40)
+                .attr("height", 40)
+                .attr("xlink:href", d => countryFlags[d.country])
+                .merge(flagSelection)
+                .transition().duration(500)
+                .ease(d3.easeLinear)
+                .attr("y", d => y(d.country) + (y.bandwidth() - 55) / 2);
+
+            flagSelection.exit().remove();
+
+            // Update country codes
+            const CountryCode = svg.selectAll(".code")
+                .data(data, d => d.country);
+
+            CountryCode.enter().append("text")
+                .attr("class", "code")
+                .attr("x", -80)
+                .attr("y", d => y(d.country) + (y.bandwidth() - 5) / 2)
+                .attr("width", 40)
+                .attr("height", 40)
+                .attr("fill", "#000000")
+                .text(d => Codes[d.country])
+                .merge(CountryCode)
+                .transition().duration(500)
+                .ease(d3.easeLinear)
+                .attr("y", d => y(d.country) + (y.bandwidth() - 5) / 2);
+
+            CountryCode.exit().remove();
+
+            // Update line chart
+            //const country = data.length > 0 ? data[0].country : "";
+            updateLineChart(currentMonth, bvyCount, data);
+        }
+
+        function renderRaceChart(data) {
+            const months = [...new Set(data.map(d => d.month))].sort((a, b) => a - b); // Sort months chronologically
+
+            let i = 0;
+            function nextMonth() {
+                if (i >= months.length) {
+                    animationRunning = false; // Stop animation
+                    return;
+                }
+
+                if (!animationRunning) return; // Skip if animation is paused
+
+                const monthData = data.filter(d => d.month.getTime() === months[i].getTime())
+                    .sort((a, b) => b.value - a.value); // Sort by value descending
+                update(monthData, months[i]);
+                i++;
+                animationTimeout = setTimeout(nextMonth, 100); // Adjust the timing as needed
+            }
+
+            document.getElementById('chart').addEventListener("click", function () {
+                animationRunning = !animationRunning; // Toggle animation state
+                if (animationRunning) {
+                    nextMonth(); // Restart animation
+                } else {
+                    clearTimeout(animationTimeout); // Pause animation
+                }
+            });
+
+            nextMonth(); // Start the animation
+            document.getElementById('runButton').addEventListener('click', function () {
+                // If the animation is not running or has finished, restart it from the beginning
+                if (!animationRunning || i >= months.length) {
+                    i = 0;
+                    lineData=[];
+                     // Reset to start from the beginning
+                } else if (ispaused) {
+                    lineData=lineData.slice(0,pausedAt);
+                    lineSvg.selectAll(".point").remove();
+                }
+                animationRunning = true;
+                ispaused=false // Ensure the animation runs
+                nextMonth(); // Start the animation
+                
+            });
+            document.getElementById('pauseButton').addEventListener('click', function () {
+                animationRunning = false;
+                ispaused=true;
+                pausedAt=lineData.length // Pause the animation
+                clearTimeout(animationTimeout); // Clear the timeout to stop the animation
+            });
+        }
+
+
+        // Set up the line chart
+        const lineMargin = { top: 40, right: 40, bottom: 40, left: 60 },
+            baseLineWidth = 900 * 0.75
+        baseLineHeight = 600 * 0.75
+        lineWidth = baseLineWidth - lineMargin.left - lineMargin.right,
+            lineHeight = baseLineHeight - lineMargin.top - lineMargin.bottom;
+
+        const lineSvg = d3.select("#lineChart")
+            .append("svg")
+            .attr("width", lineWidth + lineMargin.left + lineMargin.right)
+            .attr("height", lineHeight + lineMargin.top + lineMargin.bottom)
+            .append("g")
+            .attr("transform", `translate(${lineMargin.left},${lineMargin.top - 30})`);
+
+        const xLine = d3.scaleTime().range([0, lineWidth]);
+        const yLine = d3.scaleLinear().range([lineHeight, 0]);
+
+        xLine.domain([new Date(2023, 0, 1), new Date(2024, 11, 31)]);
+        yLine.domain([0, 5]);
+        const monthFormat = d3.timeFormat("%b-%y");
+
+        lineSvg.append("g")
+            .attr("transform", `translate(0,${lineHeight})`)
+            .call(d3.axisBottom(xLine)
+                .tickFormat(d => monthFormat(d)) // Use %b for month and %Y for year
+                .ticks(d3.timeMonth.every(1))) // Show every month
+            .selectAll("text")
+            .style("text-anchor", "end")
+            .attr("dx", "-0.8em")
+            .attr("dy", "0.15em")
+            .attr("transform", "rotate(-30) translate(0,4)")
+            .style("font-size", "9px")// Ensure the text is centered
+            .call(wrapText); // Custom function to handle wrapping the text using tspans
+
+        lineSvg.append("g")
+            .call(d3.axisLeft(yLine)
+                .ticks(5)
+                .tickFormat(d3.format("d")));
+
+        const line = d3.line()
+            .x(d => xLine(d.month))
+            .y(d => yLine(d.count));
+
+
+        let lineData = [];
+        function wrapText(selection) {
+            selection.each(function () {
+                const self = d3.select(this);
+                const text = self.text();
+                const [month, year] = text.split(" "); // Split the month and year
+                self.text(null)
+                    .append("tspan") // First tspan for month
+                    .attr("x", 0)
+                    .attr("dy", "0.6em") // Adjust vertical alignment for month
+                    .text(month)
+                    .append("tspan") // Second tspan for year
+                    .attr("x", 0)
+                    .attr("dy", "1.2em") // Push the year below the month
+                    .text(year);
+            });
+        }
+
+        function updateLineChart(currentMonth, bvyCount, data) {
+            lineData.push({ month: currentMonth, count: bvyCount });
+
+            // Ensure lineData includes all relevant months
+
+
+            // Clear previous line and flags
+            lineSvg.selectAll(".line").remove();
+            lineSvg.selectAll(".flag").remove();
+            lineSvg.selectAll(".point").remove();
+
+            // Add the line path
+            lineSvg.append("path")
+                .datum(lineData) //use full year
+                .attr("class", "line")
+                .attr("fill", "none")
+                .attr("stroke", "#c32148")
+                .attr("stroke-width", 2)
+                .attr("d", line);
+            lineSvg.selectAll(".point")
+                .data(lineData)
+                .enter().append("circle")
+                .attr("class", "point")
+                .attr("cx", d => xLine(d.month)) // Set x position using xLine scale
+                .attr("cy", d => yLine(d.count)) // Set y position using yLine scale
+                .attr("r", 4) // Set the radius of the points
+                .attr("fill", "#ff6f61"); // Set the color of the points (can customize)
+
+            // Filter data for BVY and current month
+            const bvyDataForMonth = data.filter(d => d.product === "BVY" && d.month === currentMonth);
+
+            // Determine leading value for BVY in the current month
+            const maxBvyValue = Math.max(...bvyDataForMonth.map(d => d.value));
+
+            // Get all countries where BVY is leading (i.e., has the maximum value)
+            // Filter the countries where BVY is leading
+            const leadingCountries = data.filter(d => d.product === "BVY" && d.value !== null && d.value !== undefined);
+
+            // Update flags as data labels for countries where BVY is leading
+            const flags = lineSvg.selectAll(".flag")
+                .data(leadingCountries, d => d.country);
+
+            // Enter new flags
+            flags.enter().append("image")
+                .attr("class", "flag")
+                .attr("x", (d, i) => xLine(currentMonth)) // Space out flags horizontally
+                .attr("y", (d, i) => yLine(bvyCount) - 30 + i * 35) // Adjust vertical position
+                .attr("width", 30)
+                .attr("height", 20)
+                .attr("xlink:href", d => countryFlags[d.country] || "images/Austria.png") // Default image if no country flag is found
+                .merge(flags)
+                .transition().duration(500)
+                .attr("x", (d, i) => xLine(currentMonth)) // Space out flags horizontally
+                .attr("y", (d, i) => yLine(bvyCount) - 30 + i * 35);
+
+            // Remove old flags
+            flags.exit().remove();
+        }
+    </script>
+</body>
+
+</html>
