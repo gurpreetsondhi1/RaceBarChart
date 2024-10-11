@@ -124,6 +124,12 @@
             background-color: #7fcf7f;
         }
     </style>
+    <style>
+        #lineChartContainer {
+          display: none;
+        }
+      </style>
+</head>
 </head>
 
 <body style="background-color:floralwhite;">
@@ -496,7 +502,7 @@
 
         function renderRaceChart(data) {
             const months = [...new Set(data.map(d => d.month))].sort((a, b) => a - b); // Sort months chronologically
-
+            document.getElementById('lineChartContainer').style.display = 'block';
             let i = 0;
             function nextMonth() {
                 if (i >= months.length) {
