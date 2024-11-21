@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Biktarvy Performance in ACE7 Countries</title>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: antiquewhite;
+    }
+    h1 {
+      font-size: 40px;
+      margin-top: 20px;
+      margin-left: 50px;
+      color: #777171;
+      text-align: left;
+    }
+    .chart {
+      width: 32%;
+      height: 200px;
+      display: inline-block;
+      margin: 5px;
+      font-weight: bold;
+    }
+    .title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 32px;
+      text-align: left;
+      margin-left: 35px;
+      font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    }
+    .grid line {
+      stroke: lightgrey;
+      stroke-opacity: 0.2;
+      shape-rendering: crispEdges;
+    }
+    .axis text {
+      fill: grey;
+      font-size: 12px;
+    }
+    .domain {
+      display: none; /* Hides the border lines for top and right sides */
+    }
+  </style>
+</head>
+<body>
+
+<h1>Biktarvy Performance in EUCAN6 Countries</h1>
+
+<div id="chart-container">
+  <div class="chart" id="chart1"><div class="title" id="title1">France</div></div>
+  <div class="chart" id="chart2"><div class="title" id="title2">Germany</div></div>
+  <div class="chart" id="chart3"><div class="title" id="title3">Italy</div></div>
+  <div class="chart" id="chart4"><div class="title" id="title4">Spain</div></div>
+  <div class="chart" id="chart5"><div class="title" id="title5">UK</div></div>
+  <div class="chart" id="chart6"><div class="title" id="title6">Canada</div></div>
+</div>
+
+<script>
+    const data = [
+      {
+        country: "FRANCE",
+        values: [
+          {month: "2018-01", share: 15}, {month: "2018-02", share: 22}, {month: "2018-03", share: 24},
+          {month: "2018-04", share: 26}, {month: "2018-05", share: 28}, {month: "2018-06", share: 30},
+          {month: "2018-07", share: 32}, {month: "2018-08", share: 28}, {month: "2018-09", share: 26},
+          {month: "2018-10", share: 28}, {month: "2018-11", share: 30}, {month: "2018-12", share: 32},
+          {month: "2019-01", share: 38}, {month: "2019-02", share: 32}, {month: "2019-03", share: 34},
+          {month: "2019-04", share: 36}, {month: "2019-05", share: 38}, {month: "2019-06", share: 40},
+          {month: "2019-07", share: 42}, {month: "2019-08", share: 40}, {month: "2019-09", share: 40},
+          {month: "2019-10", share: 42}, {month: "2019-11", share: 38}, {month: "2019-12", share: 36},
+          {month: "2020-01", share: 38}, {month: "2020-02", share: 32}, {month: "2020-03", share: 34},
+          {month: "2020-04", share: 36}, {month: "2020-05", share: 38}, {month: "2020-06", share: 40},
+          {month: "2020-07", share: 42}, {month: "2020-08", share: 40}, {month: "2020-09", share: 40},
+          {month: "2020-10", share: 42}, {month: "2020-11", share: 38}, {month: "2020-12", share: 36},
+          {month: "2021-01", share: 40}, {month: "2021-02", share: 42}, {month: "2021-03", share: 44},
+          {month: "2021-04", share: 46}, {month: "2021-05", share: 48}, {month: "2021-06", share: 50},
+          {month: "2021-07", share: 52}, {month: "2021-08", share: 48}, {month: "2021-09", share: 48},
+          {month: "2021-10", share: 48}, {month: "2021-11", share: 48}, {month: "2021-12", share: 46}
+        ]
+      },
+      {
+        country: "GERMANY",
+        values: [
+          {month: "2018-01", share: 25}, {month: "2018-02", share: 27}, {month: "2018-03", share: 29},
+          {month: "2018-04", share: 31}, {month: "2018-05", share: 33}, {month: "2018-06", share: 35},
+          {month: "2018-07", share: 37}, {month: "2018-08", share: 39}, {month: "2018-09", share: 41},
+          {month: "2018-10", share: 43}, {month: "2018-11", share: 45}, {month: "2018-12", share: 47},
+          {month: "2019-01", share: 38}, {month: "2019-02", share: 32}, {month: "2019-03", share: 34},
+          {month: "2019-04", share: 36}, {month: "2019-05", share: 38}, {month: "2019-06", share: 40},
+          {month: "2019-07", share: 42}, {month: "2019-08", share: 40}, {month: "2019-09", share: 40},
+          {month: "2019-10", share: 42}, {month: "2019-11", share: 38}, {month: "2019-12", share: 36},
+          {month: "2020-01", share: 38}, {month: "2020-02", share: 32}, {month: "2020-03", share: 34},
+          {month: "2020-04", share: 36}, {month: "2020-05", share: 38}, {month: "2020-06", share: 40},
+          {month: "2020-07", share: 42}, {month: "2020-08", share: 40}, {month: "2020-09", share: 40},
+          {month: "2020-10", share: 42}, {month: "2020-11", share: 38}, {month: "2020-12", share: 36},
+          {month: "2021-01", share: 40}, {month: "2021-02", share: 42}, {month: "2021-03", share: 44},
+          {month: "2021-04", share: 46}, {month: "2021-05", share: 48}, {month: "2021-06", share: 50},
+          {month: "2021-07", share: 52}, {month: "2021-08", share: 48}, {month: "2021-09", share: 48},
+          {month: "2021-10", share: 48}, {month: "2021-11", share: 48}, {month: "2021-12", share: 46}
+        ]
+      },
+      {
+        country: "SPAIN",
+        values: [
+          {month: "2018-01", share: 25}, {month: "2018-02", share: 27}, {month: "2018-03", share: 39},
+          {month: "2018-04", share: 31}, {month: "2018-05", share: 33}, {month: "2018-06", share: 45},
+          {month: "2018-07", share: 37}, {month: "2018-08", share: 39}, {month: "2018-09", share: 51},
+          {month: "2018-10", share: 43}, {month: "2018-11", share: 45}, {month: "2018-12", share: 67},
+          {month: "2019-01", share: 38}, {month: "2019-02", share: 32}, {month: "2019-03", share: 34},
+          {month: "2019-04", share: 36}, {month: "2019-05", share: 38}, {month: "2019-06", share: 40},
+          {month: "2019-07", share: 42}, {month: "2019-08", share: 40}, {month: "2019-09", share: 40},
+          {month: "2019-10", share: 42}, {month: "2019-11", share: 38}, {month: "2019-12", share: 36},
+          {month: "2020-01", share: 38}, {month: "2020-02", share: 32}, {month: "2020-03", share: 34},
+          {month: "2020-04", share: 36}, {month: "2020-05", share: 38}, {month: "2020-06", share: 40},
+          {month: "2020-07", share: 42}, {month: "2020-08", share: 40}, {month: "2020-09", share: 40},
+          {month: "2020-10", share: 42}, {month: "2020-11", share: 38}, {month: "2020-12", share: 36},
+          {month: "2021-01", share: 40}, {month: "2021-02", share: 42}, {month: "2021-03", share: 44},
+          {month: "2021-04", share: 46}, {month: "2021-05", share: 48}, {month: "2021-06", share: 50},
+          {month: "2021-07", share: 52}, {month: "2021-08", share: 48}, {month: "2021-09", share: 48},
+          {month: "2021-10", share: 48}, {month: "2021-11", share: 48}, {month: "2021-12", share: 46}
+        ]
+      },
+      {
+        country: "ITALY",
+        values: [
+          {month: "2018-01", share: 25}, {month: "2018-02", share: 27}, {month: "2018-03", share: 19},
+          {month: "2018-04", share: 31}, {month: "2018-05", share: 33}, {month: "2018-06", share: 25},
+          {month: "2018-07", share: 37}, {month: "2018-08", share: 39}, {month: "2018-09", share: 28},
+          {month: "2018-10", share: 43}, {month: "2018-11", share: 45}, {month: "2018-12", share: 26},
+          {month: "2019-01", share: 38}, {month: "2019-02", share: 32}, {month: "2019-03", share: 34},
+          {month: "2019-04", share: 36}, {month: "2019-05", share: 38}, {month: "2019-06", share: 40},
+          {month: "2019-07", share: 42}, {month: "2019-08", share: 40}, {month: "2019-09", share: 40},
+          {month: "2019-10", share: 42}, {month: "2019-11", share: 38}, {month: "2019-12", share: 36},
+          {month: "2020-01", share: 38}, {month: "2020-02", share: 32}, {month: "2020-03", share: 34},
+          {month: "2020-04", share: 36}, {month: "2020-05", share: 38}, {month: "2020-06", share: 40},
+          {month: "2020-07", share: 42}, {month: "2020-08", share: 40}, {month: "2020-09", share: 40},
+          {month: "2020-10", share: 42}, {month: "2020-11", share: 38}, {month: "2020-12", share: 36},
+          {month: "2021-01", share: 40}, {month: "2021-02", share: 42}, {month: "2021-03", share: 44},
+          {month: "2021-04", share: 46}, {month: "2021-05", share: 48}, {month: "2021-06", share: 50},
+          {month: "2021-07", share: 52}, {month: "2021-08", share: 48}, {month: "2021-09", share: 48},
+          {month: "2021-10", share: 48}, {month: "2021-11", share: 48}, {month: "2021-12", share: 46}
+        ]
+      },
+      {
+        country: "UK",
+        values: [
+          {month: "2018-01", share: 25}, {month: "2018-02", share: 27}, {month: "2018-03", share: 39},
+          {month: "2018-04", share: 31}, {month: "2018-05", share: 33}, {month: "2018-06", share: 35},
+          {month: "2018-07", share: 37}, {month: "2018-08", share: 39}, {month: "2018-09", share: 31},
+          {month: "2018-10", share: 43}, {month: "2018-11", share: 45}, {month: "2018-12", share: 47},
+          {month: "2019-01", share: 38}, {month: "2019-02", share: 32}, {month: "2019-03", share: 34},
+          {month: "2019-04", share: 36}, {month: "2019-05", share: 38}, {month: "2019-06", share: 40},
+          {month: "2019-07", share: 42}, {month: "2019-08", share: 40}, {month: "2019-09", share: 40},
+          {month: "2019-10", share: 42}, {month: "2019-11", share: 38}, {month: "2019-12", share: 36},
+          {month: "2020-01", share: 38}, {month: "2020-02", share: 32}, {month: "2020-03", share: 34},
+          {month: "2020-04", share: 36}, {month: "2020-05", share: 38}, {month: "2020-06", share: 40},
+          {month: "2020-07", share: 42}, {month: "2020-08", share: 40}, {month: "2020-09", share: 40},
+          {month: "2020-10", share: 42}, {month: "2020-11", share: 38}, {month: "2020-12", share: 36},
+          {month: "2021-01", share: 40}, {month: "2021-02", share: 42}, {month: "2021-03", share: 44},
+          {month: "2021-04", share: 46}, {month: "2021-05", share: 48}, {month: "2021-06", share: 50},
+          {month: "2021-07", share: 52}, {month: "2021-08", share: 48}, {month: "2021-09", share: 48},
+          {month: "2021-10", share: 48}, {month: "2021-11", share: 48}, {month: "2021-12", share: 46}
+        ]
+      },
+      {
+        country: "CANADA",
+        values: [
+          {month: "2018-01", share: 25}, {month: "2018-02", share: 27}, {month: "2018-03", share: 9},
+          {month: "2018-04", share: 31}, {month: "2018-05", share: 33}, {month: "2018-06", share: 35},
+          {month: "2018-07", share: 37}, {month: "2018-08", share: 39}, {month: "2018-09", share: 51},
+          {month: "2018-10", share: 43}, {month: "2018-11", share: 45}, {month: "2018-12", share: 67},
+          {month: "2019-01", share: 38}, {month: "2019-02", share: 32}, {month: "2019-03", share: 34},
+          {month: "2019-04", share: 36}, {month: "2019-05", share: 38}, {month: "2019-06", share: 40},
+          {month: "2019-07", share: 42}, {month: "2019-08", share: 40}, {month: "2019-09", share: 40},
+          {month: "2019-10", share: 42}, {month: "2019-11", share: 38}, {month: "2019-12", share: 36},
+          {month: "2020-01", share: 38}, {month: "2020-02", share: 32}, {month: "2020-03", share: 34},
+          {month: "2020-04", share: 36}, {month: "2020-05", share: 38}, {month: "2020-06", share: 40},
+          {month: "2020-07", share: 42}, {month: "2020-08", share: 40}, {month: "2020-09", share: 40},
+          {month: "2020-10", share: 42}, {month: "2020-11", share: 38}, {month: "2020-12", share: 36},
+          {month: "2021-01", share: 40}, {month: "2021-02", share: 42}, {month: "2021-03", share: 44},
+          {month: "2021-04", share: 46}, {month: "2021-05", share: 48}, {month: "2021-06", share: 50},
+          {month: "2021-07", share: 52}, {month: "2021-08", share: 48}, {month: "2021-09", share: 48},
+          {month: "2021-10", share: 48}, {month: "2021-11", share: 48}, {month: "2021-12", share: 46}
+        ]
+      },
+      // Add more countries with similar structure
+    ];
+  
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
+  
+    const animationStates = data.map(() => ({ paused: false, timeout: null }));
+
+data.forEach((countryData, i) => {
+  const margin = { top: 10, right: 30, bottom: 30, left: 40 },
+        width = 450 - margin.left - margin.right,
+        height = 250 - margin.top - margin.bottom;
+
+  d3.select("#title" + (i + 1))
+    .text(countryData.country)
+    .style("color", color(i));
+
+  const svg = d3.select("#chart" + (i + 1))
+    .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  const parseTime = d3.timeParse("%Y-%m");
+  countryData.values.forEach(d => {
+    d.date = parseTime(d.month);
+  });
+
+  const x = d3.scaleTime()
+    .domain(d3.extent(countryData.values, d => d.date))
+    .range([0, width]);
+
+  const y = d3.scaleLinear()
+    .domain([0, 100])
+    .range([height, 0]);
+
+  svg.append("g")
+    .attr("class", "grid")
+    .attr("transform", `translate(0,${height})`)
+    .call(d3.axisBottom(x).ticks(d3.timeYear.every(1))
+      .tickFormat(d => (d.getMonth() === 0 ? d.getFullYear() : "")));
+
+  svg.append("g")
+    .attr("class", "axis")
+    .call(d3.axisLeft(y).ticks(10));
+
+  const area = d3.area()
+    .x(d => x(d.date))
+    .y0(height)
+    .y1(d => y(d.share));
+
+  const areaPath = svg.append("path")
+    .datum([])
+    .attr("fill", color(i))
+    .attr("fill-opacity", 0.5)
+    .attr("d", area);
+
+  let currentMonthIndex = 0;
+
+  const animate = () => {
+    if (animationStates[i].paused) return; // Stop if paused
+
+    if (currentMonthIndex < countryData.values.length) {
+      areaPath
+        .datum(countryData.values.slice(0, currentMonthIndex + 1))
+        .transition()
+        .duration(100)
+        .attr("d", area);
+
+      animationStates[i].timeout = setTimeout(() => {
+        currentMonthIndex++;
+        animate();
+      }, 100);
+    }
+  };
+
+  // Start animation
+  animate();
+
+  // Add click event to toggle pause/resume
+  d3.select("#chart" + (i + 1)).on("click", () => {
+    if (animationStates[i].paused) {
+      animationStates[i].paused = false;
+      animate(); // Resume animation
+    } else {
+      animationStates[i].paused = true;
+      clearTimeout(animationStates[i].timeout); // Pause animation
+    }
+  });
+});</script>
+  
