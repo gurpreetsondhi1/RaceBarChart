@@ -23,7 +23,6 @@
 <body>
     <div id="chart"></div>
     <script>
-        // Full hardcoded dataset
         const data = [
             { month: "2023-01", country: "USA", marketShare: 38 },
             { month: "2023-01", country: "Canada", marketShare: 25 },
@@ -501,7 +500,7 @@
             const yearTicks = visibleMonths.filter(month => month.endsWith("-12"));
 
             xAxisGroup.transition()
-                .duration(100)
+                .duration(300)
                 .call(
                     d3.axisTop(xScale)
                         .tickValues(yearTicks)
@@ -513,85 +512,102 @@
         }
 
         function renderChart() {
-            const rankedData = allMonths
-                .filter(month => currentData.some(d => d.month === month))
-                .map(month => {
-                    const monthData = currentData
-                        .filter(d => d.month === month)
-                        .sort((a, b) => b.marketShare - a.marketShare);
-                    return monthData.map((d, i) => ({ ...d, rank: i + 1 }));
-                }).flat();
+          const rankedData = allMonths
+              .filter(month => currentData.some(d => d.month === month))
+              .map(month => {
+                  const monthData = currentData
+                      .filter(d => d.month === month)
+                      .sort((a, b) => b.marketShare - a.marketShare);
+                  return monthData.map((d, i) => ({ ...d, rank: i + 1 }));
+              }).flat();
 
-            const groupedData = d3.group(rankedData, d => d.country);
+          const groupedData = d3.group(rankedData, d => d.country);
 
-            const lines = svg.selectAll(".line").data([...groupedData.entries()], d => d[0]);
+          // Create clip path for the forward animation
+          const clip = svg.append("clipPath")
+              .attr("id", "line-clip")
+              .append("rect")
+              .attr("x", margin.left)
+              .attr("y", margin.top)
+              .attr("width", 0) // Start with 0 width
+              .attr("height", height - margin.top - margin.bottom);
 
-            lines.enter()
-                .append("path")
-                .attr("class", "line")
-                .merge(lines)
-                .transition()
-                .duration(100)
-                .attr("d", ([, values]) => lineGenerator(values))
-                .attr("stroke", ([country]) => colorScale(country))
-                .attr("stroke-opacity", 0.7)
-                .attr("stroke-dasharray", ([, values]) => {
-                    const latestRank = values[values.length - 1]?.rank;
-                    return latestRank % 2 === 0 ? "5,5" : "none";
-                });
+          // Incrementally increase the width of the clip path
+          clip.transition()
+              .duration(300)
+              .ease(d3.easeLinear)
+              .attr("width", width - margin.right - margin.left);
 
-            lines.exit().remove();
+          const lines = svg.selectAll(".line").data([...groupedData.entries()], d => d[0]);
 
-            // // Add single big dots at the end of each line
-            // const dots = svg.selectAll(".big-dot").data([...groupedData.entries()], d => d[0]);
+          lines.enter()
+              .append("path")
+              .attr("class", "line")
+              .attr("clip-path", "url(#line-clip)") // Apply the clip path
+              .merge(lines)
+              .transition()
+              .duration(300)
+              .attr("d", ([, values]) => lineGenerator(values))
+              .attr("stroke", ([country]) => colorScale(country))
+              .attr("stroke-opacity", 0.7)
+              .attr("stroke-width", 2)
+              .attr("fill", "none")
+              .attr("stroke-dasharray", ([, values]) => {
+                  const latestRank = values[values.length - 1]?.rank;
+                  return latestRank % 2 === 0 ? "5,5" : "none";
+              });
 
-            // dots.enter()
-            //     .append("circle")
-            //     .attr("class", "big-dot")
-            //     .merge(dots)
-            //     .transition()
-            //     .duration(600)
-            //     .attr("cx", ([, values]) => xScale(values[values.length - 1].month))
-            //     .attr("cy", ([, values]) => yScale(values[values.length - 1].rank))
-            //     .attr("r", 6) // Adjust the size of the dot
-            //     .attr("fill", ([country]) => colorScale(country))
-            //     .attr("stroke", ([country]) => colorScale(country)) // Add an optional stroke
-            //     .attr("stroke-width", 2);
+          lines.exit().remove();
 
-            // dots.exit().remove();
+          // // Add single big dots at the end of each line
+          // const dots = svg.selectAll(".big-dot").data([...groupedData.entries()], d => d[0]);
 
-           // Add country labels with flags
-                      const labels = svg.selectAll(".label-group").data([...groupedData.entries()], d => d[0]);
+          // dots.enter()
+          //     .append("circle")
+          //     .attr("class", "big-dot")
+          //     .merge(dots)
+          //     .transition()
+          //     .duration(600)
+          //     .attr("cx", ([, values]) => xScale(values[values.length - 1].month))
+          //     .attr("cy", ([, values]) => yScale(values[values.length - 1].rank))
+          //     .attr("r", 6)
+          //     .attr("fill", ([country]) => colorScale(country));
 
-            const labelGroups = labels.enter()
-                .append("g")
-                .attr("class", "label-group");
+          // dots.exit().remove();
 
-            labelGroups.append("image")
-                .attr("class", "flag")
-                .attr("x", width - 180) // Adjust position of the flags
-                .attr("width", 30)
-                .attr("height", 20)
-                .merge(labels.select(".flag"))
-                .transition()
-                .duration(100)
-                .attr("y", ([, values]) => yScale(values[values.length - 1].rank) - 10)
-                .attr("xlink:href", ([country]) => `images/${country}.png`);
+          // Add labels and flags
+          const labels = svg.selectAll(".label-group").data([...groupedData.entries()], d => d[0]);
 
-            labelGroups.append("text")
-                .attr("class", "label")
-                .merge(labels.select(".label"))
-                .transition()
-                .style("font-size", "18px")
-                .duration(100)
-                .attr("x", width - 140)
-                .style("font-weight", "bold")
-                .attr("y", ([, values]) => yScale(values[values.length - 1].rank)+5)
-                .attr("fill", ([country]) => colorScale(country))
-                .text(([country, values]) => `${country}  ${values[values.length - 1].rank}`);
+          const labelGroups = labels.enter()
+              .append("g")
+              .attr("class", "label-group");
 
-            labels.exit().remove();
-            }
+          labelGroups.append("image")
+              .attr("class", "flag")
+              .attr("x", width - 180)
+              .attr("width", 30)
+              .attr("height", 20)
+              .merge(labels.select(".flag"))
+              .transition()
+              .duration(300)
+              .attr("y", ([, values]) => yScale(values[values.length - 1].rank) - 10)
+              .attr("xlink:href", ([country]) => `images/${country}.png`);
+
+          labelGroups.append("text")
+              .attr("class", "label")
+              .merge(labels.select(".label"))
+              .attr("x", width - 140)
+              .transition()
+              .style("font-size", "18px")
+              .duration(300)
+              .style("font-weight", "bold")
+              .attr("y", ([, values]) => yScale(values[values.length - 1].rank) + 5)
+              .attr("fill", ([country]) => colorScale(country))
+              .text(([country, values]) => `${country}  ${values[values.length - 1].rank}`);
+
+          labels.exit().remove();
+      }
+
 
         let monthIndex = 0;
         let interval;
