@@ -13,7 +13,7 @@
             fill: steelblue;
         }
         .bar-label {
-            font-size: 14px;
+            font-size: 20px;
             text-anchor: middle;
             fill: white;
             font-weight: bold;
@@ -23,7 +23,7 @@
             text-anchor: middle;
             fill: white;
             font-weight: bold;
-            text-align: right;
+            text-align: left;
         }
         .year-label {
             font-size: 28px;
@@ -660,30 +660,62 @@
 
         const x = d3.scaleLinear()
             .domain([0, d3.max(data, d => d.value)])
-            .range([0, width-200]);
+            .range([0, width-100]);
 
         const y = d3.scaleBand()
             .domain(companies)
-            .range([40, height])
+            .range([50, height])
             .padding(0.1);
 
-        const color = d3.scaleOrdinal(d3.schemeCategory10);
+            const color = d3.scaleOrdinal()
+            .domain(companies)
+            .range([
+                "#2c3e50", "#e74c3c", "#4daf4a", "#984ea3", "#ff7f00", 
+                "#BA55D3", "#a65628", "#f781bf", "#999999", "#66c2a5", 
+                "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#b03a2e",
+                "#e5c494", "#b3b3b3"
+            ]);
 
-        // Add a heading to the chart
+        svg.append("rect")
+            .attr("class", "title-box")
+            .attr("x", -50) 
+            .attr("y", -45) 
+            .attr("width", 10)
+            .attr("height", 55) 
+            .style("fill", "#d77777"); 
+        
+            svg.append("rect")
+            .attr("class", "title-line")
+            .attr("x", -50) 
+            .attr("y", 15) 
+            .attr("width", 800)
+            .attr("height", 2) 
+            .style("fill", "#d77777");
+
         svg.append("text")
             .attr("class", "chart-title")
-            .attr("x", (width / 2)-200)
+            .attr("x", 320)
             .attr("y", -20)
             .attr("text-anchor", "middle")
-            .style("font-size", "30px")
+            .style("font-size", "34px")
             .style("font-weight", "bold")
             .style("fill","#d77777")
             .text("Top Pharmaceutical Companies by Revenue");
+        
+        svg.append("text")
+            .attr("class", "chart-title-a")
+            .attr("x", 34)
+            .attr("y", 10)
+            .attr("text-anchor", "middle")
+            .style("font-size", "20px")
+            .style("font-weight", "bold")
+            .style("fill","#d77777")
+            .text("In Billion US$");
 
         const yearLabel = svg.append("text")
             .attr("class", "year-label")
-            .attr("x", 10)
-            .attr("y", 25)
+            .attr("x", 300)
+            .attr("y", 40)
             .attr("text-anchor", "end")
             .style("font-size", "24px")
             .style("font-weight", "bold")
@@ -712,7 +744,7 @@
                 .attr("width", 0)
                 .style("fill", d => color(d.name))
                 .merge(bars)
-                .transition().duration(700)
+                .transition().duration(600)
                 .ease(d3.easeLinear)
                 .attr("fill", d => color(d.product))
                 .attr("width", d => x(d.value))
@@ -732,31 +764,34 @@
                 .style("fill", d => color(d.name))
                 .text(d => `$${d3.format(".1f")(d.value)} Billions`)
                 .merge(labels)
-                .transition().duration(700)
+                .transition().duration(600)
                 .ease(d3.easeLinear)
                 .attr("x", d => x(d.value) + 75)
                 .attr("y", (d, i) => y(d.name) + y.bandwidth() / 2)
-                .text(d => `$${d3.format(".1f")(d.value)} Billions`);
+                .text(d => `$${d3.format(".1f")(d.value)}`);
 
-            // Add or update the name label to the left of the bar
-            // const nameLabels = svg.selectAll(".name-label")
-            //     .data(filteredData, d => d.name);
+            //Add or update the name label to the left of the bar
+            const nameLabels = svg.selectAll(".name-label")
+                .data(filteredData, d => d.name);
 
-            // nameLabels.exit().remove();
+            nameLabels.exit().remove();
 
-            // nameLabels.enter().append("text")
-            //     .attr("class", "name-label")
-            //     .attr("y", (d, i) => y(d.name) + y.bandwidth() / 2)
-            //     .attr("x", -80) // Position name to the left of the bar
-            //     .attr("dy", ".55em")
-            //     .style("fill", d => color(d.name))
-            //     .text(d => d.name)
-            //     .merge(nameLabels)
-            //     .transition().duration(500)
-            //     .ease(d3.easeLinear)
-            //     .attr("x", -80)
-            //     .attr("y", (d, i) => y(d.name) + y.bandwidth() / 2)
-            //     .text(d => d.name);
+            nameLabels.enter().append("text")
+                .attr("class", "name-label")
+                .attr("y", (d, i) => y(d.name) + y.bandwidth() / 2)
+                .attr("x", 45) 
+                .attr("dy", ".55em")
+                .style("fill", 'white')
+                .style("align",'left')
+                .text(d => d.name)
+                .merge(nameLabels)
+                .transition().duration(600)
+                .ease(d3.easeLinear)
+                .attr("x", 45)
+                .attr("y", (d, i) => y(d.name) + y.bandwidth() / 2)
+                .text(d => d.name);
+
+            svg.selectAll(".logo").remove();
 
             const logoSelection = svg.selectAll(".logo")
                 .data(data, d => d.name);
@@ -769,7 +804,7 @@
                 .attr("height", 35)
                 .attr("xlink:href", d => companyLogos[d.name])
                 .merge(logoSelection)
-                .transition().duration(700)
+                .transition().duration(1000)
                 .ease(d3.easeLinear)
                 .attr("x", -50)
                 .attr("y", d => y(d.name) + ((y.bandwidth()) / 2)-17);
@@ -779,8 +814,8 @@
 
         }
 
-        let i = 0; // Index for the current year
-        let isPaused = false; // Variable to track pause/resume
+        let i = 0;
+        let isPaused = false; 
         let interval;
 
         // Function to start the interval
@@ -800,19 +835,19 @@
                     update(years[i]);
                     i++;
                 } else {
-                    clearInterval(interval); // Stop when all years are covered
+                    clearInterval(interval); 
                 }
-            }, 700);
+            }, 800);
         }
 
 
         // Attach click event listener to the SVG container
         d3.select("svg").on("click", () => {
                     if (interval) {
-                        clearInterval(interval); // Pause if running
+                        clearInterval(interval); 
                         interval = null;
                     } else {
-                        startInterval(); // Resume if paused
+                        startInterval(); 
                     }
                 });
 
