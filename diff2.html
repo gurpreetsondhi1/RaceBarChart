@@ -13,7 +13,7 @@
         }
         h2 {
             font-size: 42px;
-            color: grey;
+            color: #d77777;
             text-align: center;
             margin-right: 20px;
         }
@@ -24,27 +24,10 @@
     </style>
 </head>
 <body>
-    <h2>Performace of All HIV Products</h2>
+    <h2>Performace of Biktarvy</h2>
     <canvas id="myChart" width="1200" height="500"></canvas>
 
     <script>
-        // svg.append("rect")
-        //     .attr("class", "title-line")
-        //     .attr("x", -50) 
-        //     .attr("y", 15) 
-        //     .attr("width", 800)
-        //     .attr("height", 2) 
-        //     .style("fill", "#d77777");
-
-        // svg.append("text")
-        //     .attr("class", "chart-title")
-        //     .attr("x", 320)
-        //     .attr("y", -20)
-        //     .attr("text-anchor", "middle")
-        //     .style("font-size", "34px")
-        //     .style("font-weight", "bold")
-        //     .style("fill","#d77777")
-        //     .text("Top Pharmaceutical Companies by Revenue");
 
         const data = [
             { month: "2018-01", President: "Biktarvy Ph-1", dataValue: 0 , comment: null },
@@ -536,7 +519,7 @@
  
         ];
 
-        const months = [...new Set(data.map(item => item.month))];
+    const months = [...new Set(data.map(item => item.month))];
 
     const formattedMonths = months.map(month => {
         const [year, monthNum] = month.split('-');
@@ -564,27 +547,21 @@
     }));
 
     const ctx = document.getElementById('myChart').getContext('2d');
-    let isPaused = false; // Track whether the chart animation is paused
+    let isPaused = false; 
 
-    // Plugin to change chart background dynamically
     const backgroundPlugin = {
         id: 'backgroundColorPlugin',
-
-        
-
-
 
         beforeDraw: (chart) => {
             const ctx = chart.ctx;
             const { chartArea, scales } = chart;
-
+                       
             // Clear the existing background
             ctx.save();
-            ctx.fillStyle = 'white'; // Base background color
+            ctx.fillStyle = 'white'; 
             ctx.fillRect(chartArea.left, chartArea.top, chartArea.width, chartArea.height);
 
-            // Draw alternating background colors
-            const monthsPerYear = 12; // Assuming 12 months in the x-axis
+            const monthsPerYear = 12; 
             const totalMonths = months.length;
 
             let startX = chartArea.left;
@@ -593,8 +570,8 @@
                 const [year, month] = months[i]?.split('-') || [];
                 if (!year) continue;
 
-                // Determine background color for the year
-                const color = parseInt(year) % 2 === 0 ? '#edf0f2' : '#dee1e3'; // Dark gray for even years, light gray for odd years
+                
+                const color = parseInt(year) % 2 === 0 ? '#edf0f2' : '#dee1e3'; 
 
                 const endX = scales.x.getPixelForValue(i + monthsPerYear) || chartArea.right;
 
@@ -616,6 +593,8 @@
             };
         }
     };
+
+
 
     const chart = new Chart(ctx, {
         type: 'line',
@@ -645,20 +624,23 @@
                     },
                     ticks: {
                         font: {
-                            size: 14
+                            size: 14,
+                            weight:'bold',
+                            //xAdjust:10
                         },
                         autoSkip: false,
                         callback: (value, index) => {
                             const month = months[index];
                             if (!month) return ''; // Guard against out-of-bounds
                             const [year, monthNum] = month.split('-');
-                            if (monthNum === '12') {
-                                return year;
+                            if (monthNum === '01' & year!='2018' ) {
+                                return year-1;
                             }
                             return '';
                         },
-                        maxRotation: 90,
-                        minRotation: 90
+                        maxRotation: 0,
+                        minRotation: 0
+                        //align: 'end'
                     },
                     grid: {
                         display: false
@@ -674,7 +656,8 @@
                     },
                     ticks: {
                         font: {
-                            size: 14
+                            size: 14,
+                            weight:'bold'
                         },
                         stepSize: (Math.max(...data.map(item => item.dataValue))) / 100,  // Fix 10 ticks
                         maxTicksLimit: 10, 
