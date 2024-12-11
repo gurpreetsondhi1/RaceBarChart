@@ -550,8 +550,18 @@
                 spanGaps: true,
                 pointRadius: (ctx) => {
                 const index = ctx.dataIndex;
-                const month = months[index]?.split('-')[1]; // Extract the month part
-                    return month === '01' || month === '12' ? 2 : 0; // Show dot for January and December
+                const [year, month] = months[index]?.split('-') || []; 
+
+
+                const isFourYearPeriod = parseInt(year) % 4 === 0;
+                const isLastFourYearPeriod = parseInt(year*1+1) % 4 === 0;
+                const minYear = Math.min(...months.map(month => parseInt(month.split('-')[0])));
+                const maxYear = Math.max(...months.map(month => parseInt(month.split('-')[0])));
+
+                    console.log("Extra", year*1+1,isLastFourYearPeriod)
+                    console.log(year,isFourYearPeriod)
+         
+                return (isFourYearPeriod && month === '01' )|| (isLastFourYearPeriod  && month === '12') ? 2 : 0;
                 },
             }));
 
