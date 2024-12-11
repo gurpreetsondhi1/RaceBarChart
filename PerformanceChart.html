@@ -1,784 +1,770 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Line Chart with Dynamic Annotations</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
-    <style>
-        body {
-            background-color: #ebf1f5;
-            font-family: Arial, sans-serif;
-        }
-        h2 {
-            font-size: 42px;
-            color: #d77777;
-            text-align: center;
-            margin-right: 20px;
-        }
-        canvas {
-            display: block;
-            margin: 0 auto;
-        }
-    </style>
-</head>
-<body>
-    <h2>Performace of Biktarvy</h2>
-    <canvas id="myChart" width="1200" height="500"></canvas>
-
-    <script>
-
-        const data = [
-            { month: "2018-01", Product: "Biktarvy Ph-1", dataValue: 0 , comment: null },
-            { month: "2018-01", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
-            { month: "2018-01", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2018-01", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2018-02", Product: "Biktarvy Ph-1", dataValue: 12 , comment: null },
-            { month: "2018-02", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
-            { month: "2018-02", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2018-02", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2018-03", Product: "Biktarvy Ph-1", dataValue: 6 , comment: null },
-            { month: "2018-03", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
-            { month: "2018-03", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2018-03", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2018-04", Product: "Biktarvy Ph-1", dataValue: 7 , comment: null },
-            { month: "2018-04", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
-            { month: "2018-04", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2018-04", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2018-05", Product: "Biktarvy Ph-1", dataValue: 11 , comment: null },
-            { month: "2018-05", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
-            { month: "2018-05", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2018-05", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2018-06", Product: "Biktarvy Ph-1", dataValue: 10 , comment: 'Phase 1' },
-            { month: "2018-06", Product: "Biktarvy Ph-2", dataValue: null , comment:  null},
-            { month: "2018-06", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2018-06", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2018-07", Product: "Biktarvy Ph-1", dataValue: 17 , comment: null },
-            { month: "2018-07", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
-            { month: "2018-07", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2018-07", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2018-08", Product: "Biktarvy Ph-1", dataValue: 19 , comment: null },
-            { month: "2018-08", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
-            { month: "2018-08", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2018-08", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2018-09", Product: "Biktarvy Ph-1", dataValue: 30 , comment: null },
-            { month: "2018-09", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
-            { month: "2018-09", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2018-09", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2018-10", Product: "Biktarvy Ph-1", dataValue: 36 ,  comment: null },
-            { month: "2018-10", Product: "Biktarvy Ph-2", dataValue: null ,  comment: null },
-            { month: "2018-10", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
-            { month: "2018-10", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
-
-            { month: "2018-11", Product: "Biktarvy Ph-1", dataValue: 35 ,  comment: null },
-            { month: "2018-11", Product: "Biktarvy Ph-2", dataValue: null ,  comment: null },
-            { month: "2018-11", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
-            { month: "2018-11", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
-
-            { month: "2018-12", Product: "Biktarvy Ph-1", dataValue: 42 ,  comment: null },
-            { month: "2018-12", Product: "Biktarvy Ph-2", dataValue: null ,  comment: null },
-            { month: "2018-12", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
-            { month: "2018-12", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
-
-
-            { month: "2019-01", Product: "Biktarvy Ph-2", dataValue:  0, comment: null },
-            { month: "2019-01", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2019-01", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-            { month: "2019-01", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
-
-            { month: "2019-02", Product: "Biktarvy Ph-2", dataValue: 7 , comment: null },
-            { month: "2019-02", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2019-02", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-            { month: "2019-02", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
-
-            { month: "2019-03", Product: "Biktarvy Ph-2", dataValue: 20 , comment: null },
-            { month: "2019-03", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2019-03", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-            { month: "2019-03", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
-
-            { month: "2019-04", Product: "Biktarvy Ph-2", dataValue: 42 , comment: null },
-            { month: "2019-04", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2019-04", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-            { month: "2019-04", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
-
-            { month: "2019-05", Product: "Biktarvy Ph-2", dataValue: 45 , comment: null },
-            { month: "2019-05", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2019-05", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-            { month: "2019-05", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
-
-            { month: "2019-06", Product: "Biktarvy Ph-2", dataValue: 46 , comment: "Phase 2" },
-            { month: "2019-06", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2019-06", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-            { month: "2019-06", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
-
-            { month: "2019-07", Product: "Biktarvy Ph-2", dataValue: 47 , comment: null },
-            { month: "2019-07", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2019-07", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-            { month: "2019-07", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
-
-            { month: "2019-08", Product: "Biktarvy Ph-2", dataValue: 40 , comment: null },
-            { month: "2019-08", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2019-08", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-            { month: "2019-08", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
-
-            { month: "2019-09", Product: "Biktarvy Ph-2", dataValue: 35 , comment: null },
-            { month: "2019-09", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2019-09", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-            { month: "2019-09", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
-
-            { month: "2019-10", Product: "Biktarvy Ph-2", dataValue: 36 ,  comment: null },
-            { month: "2019-10", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
-            { month: "2019-10", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
-            { month: "2019-10", Product: "Biktarvy Ph-4", dataValue: null ,  comment: null },
-
-            { month: "2019-11", Product: "Biktarvy Ph-2", dataValue: 39 ,  comment: null },
-            { month: "2019-11", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
-            { month: "2019-11", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
-            { month: "2019-11", Product: "Biktarvy Ph-4", dataValue: null ,  comment: null },
-
-            { month: "2019-12", Product: "Biktarvy Ph-2", dataValue: 42 ,  comment: null },
-            { month: "2019-12", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
-            { month: "2019-12", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
-            { month: "2019-12", Product: "Biktarvy Ph-4", dataValue: null ,  comment: null },
-
-            { month: "2020-01", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
-            { month: "2020-01", Product: "Biktarvy Ph-3", dataValue: 0 , comment: null },
-            { month: "2020-01", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-            { month: "2020-01", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
-
-            { month: "2020-02", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2020-02", Product: "Biktarvy Ph-3", dataValue: -4 , comment: null },
-            { month: "2020-02", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2020-02", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2020-03", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2020-03", Product: "Biktarvy Ph-3", dataValue: -10 , comment: null },
-            { month: "2020-03", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2020-03", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2020-04", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2020-04", Product: "Biktarvy Ph-3", dataValue: -5 , comment: null },
-            { month: "2020-04", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2020-04", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2020-05", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2020-05", Product: "Biktarvy Ph-3", dataValue: -18 , comment: null },
-            { month: "2020-05", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2020-05", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2020-06", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2020-06", Product: "Biktarvy Ph-3", dataValue: -15 , comment: "Phase 3" },
-            { month: "2020-06", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2020-06", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2020-07", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2020-07", Product: "Biktarvy Ph-3", dataValue: -12 , comment: null },
-            { month: "2020-07", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2020-07", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2020-08", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2020-08", Product: "Biktarvy Ph-3", dataValue: 2 , comment: null },
-            { month: "2020-08", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2020-08", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2020-09", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2020-09", Product: "Biktarvy Ph-3", dataValue: 4 , comment: null },
-            { month: "2020-09", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2020-09", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2020-10", Product: "Biktarvy Ph-1", dataValue: null ,  comment: null },
-            { month: "2020-10", Product: "Biktarvy Ph-3", dataValue: 2 ,  comment: null },
-            { month: "2020-10", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
-            { month: "2020-10", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
-
-            { month: "2020-11", Product: "Biktarvy Ph-1", dataValue: null ,  comment: null },
-            { month: "2020-11", Product: "Biktarvy Ph-3", dataValue: 18 ,  comment: null },
-            { month: "2020-11", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
-            { month: "2020-11", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
-
-            { month: "2020-12", Product: "Biktarvy Ph-1", dataValue: null ,  comment: null },
-            { month: "2020-12", Product: "Biktarvy Ph-3", dataValue: 25 ,  comment: null },
-            { month: "2020-12", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
-            { month: "2020-12", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
-
-            { month: "2021-01", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2021-01", Product: "Biktarvy Ph-4", dataValue: 0 , comment: null },
-            { month: "2021-01", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2021-01", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2021-02", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2021-02", Product: "Biktarvy Ph-4", dataValue: 25 , comment: null },
-            { month: "2021-02", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2021-02", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2021-03", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2021-03", Product: "Biktarvy Ph-4", dataValue: 28 , comment: null },
-            { month: "2021-03", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2021-03", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2021-04", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2021-04", Product: "Biktarvy Ph-4", dataValue: 30 , comment: null },
-            { month: "2021-04", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2021-04", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2021-05", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2021-05", Product: "Biktarvy Ph-4", dataValue: 32 , comment: null },
-            { month: "2021-05", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2021-05", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2021-06", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2021-06", Product: "Biktarvy Ph-4", dataValue: 34 , comment: "Phase 4" },
-            { month: "2021-06", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2021-06", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2021-07", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2021-07", Product: "Biktarvy Ph-4", dataValue: 42 , comment: null },
-            { month: "2021-07", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2021-07", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2021-08", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2021-08", Product: "Biktarvy Ph-4", dataValue: 49 , comment: null },
-            { month: "2021-08", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2021-08", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2021-09", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
-            { month: "2021-09", Product: "Biktarvy Ph-4", dataValue: 54 , comment: null },
-            { month: "2021-09", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
-            { month: "2021-09", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
-
-            { month: "2021-10", Product: "Biktarvy Ph-1", dataValue: null ,  comment: null },
-            { month: "2021-10", Product: "Biktarvy Ph-4", dataValue: 55 ,  comment: null },
-            { month: "2021-10", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
-            { month: "2021-10", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
-
-            { month: "2021-11", Product: "Biktarvy Ph-1", dataValue: null ,  comment: null },
-            { month: "2021-11", Product: "Biktarvy Ph-4", dataValue: 58 ,  comment: null },
-            { month: "2021-11", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
-            { month: "2021-11", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
-
-            { month: "2021-12", Product: "Biktarvy Ph-1", dataValue: null ,  comment: null },
-            { month: "2021-12", Product: "Biktarvy Ph-4", dataValue: 58 ,  comment: null },
-            { month: "2021-12", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
-            { month: "2021-12", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
-
-
-
-            { month: "2022-01", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2022-01", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2022-01", Product: "Biktarvy Ph-5", dataValue: 0,  comment: null },
-            { month: "2022-01", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2022-02", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2022-02", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2022-02", Product: "Biktarvy Ph-5", dataValue: 2,  comment: null },
-            { month: "2022-02", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2022-03", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2022-03", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2022-03", Product: "Biktarvy Ph-5", dataValue: 4,  comment: null },
-            { month: "2022-03", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2022-04", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2022-04", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2022-04", Product: "Biktarvy Ph-5", dataValue: 18,  comment: null },
-            { month: "2022-04", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2022-05", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2022-05", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2022-05", Product: "Biktarvy Ph-5", dataValue: 22,  comment: null },
-            { month: "2022-05", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2022-06", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2022-06", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2022-06", Product: "Biktarvy Ph-5", dataValue: 24,  comment: "Phase 5" },
-            { month: "2022-06", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2022-07", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2022-07", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2022-07", Product: "Biktarvy Ph-5", dataValue: 30,  comment: null },
-            { month: "2022-07", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2022-08", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2022-08", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2022-08", Product: "Biktarvy Ph-5", dataValue: 34,  comment: null },
-            { month: "2022-08", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2022-09", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2022-09", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2022-09", Product: "Biktarvy Ph-5", dataValue: 35,  comment: null },
-            { month: "2022-09", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2022-10", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2022-10", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2022-10", Product: "Biktarvy Ph-5", dataValue: 30,  comment: null },
-            { month: "2022-10", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2022-11", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2022-11", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2022-11", Product: "Biktarvy Ph-5", dataValue: 45,  comment: null },
-            { month: "2022-11", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2022-12", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2022-12", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2022-12", Product: "Biktarvy Ph-5", dataValue: 50,  comment: null },
-            { month: "2022-12", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2023-01", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2023-01", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2023-01", Product: "Biktarvy Ph-6", dataValue: 0,  comment: null },
-            { month: "2023-01", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2023-02", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2023-02", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2023-02", Product: "Biktarvy Ph-6", dataValue: 62,  comment: null },
-            { month: "2023-02", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2023-03", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2023-03", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2023-03", Product: "Biktarvy Ph-6", dataValue: 64,  comment: null },
-            { month: "2023-03", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2023-04", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2023-04", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2023-04", Product: "Biktarvy Ph-6", dataValue: 68,  comment: null },
-            { month: "2023-04", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2023-05", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2023-05", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2023-05", Product: "Biktarvy Ph-6", dataValue: 72,  comment: null },
-            { month: "2023-05", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2023-06", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2023-06", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2023-06", Product: "Biktarvy Ph-6", dataValue: 74,  comment: "Phase 6" },
-            { month: "2023-06", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2023-07", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2023-07", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2023-07", Product: "Biktarvy Ph-6", dataValue: 80,  comment: null },
-            { month: "2023-07", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2023-08", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2023-08", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2023-08", Product: "Biktarvy Ph-6", dataValue: 84,  comment: null },
-            { month: "2023-08", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2023-09", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2023-09", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2023-09", Product: "Biktarvy Ph-6", dataValue: 85,  comment: null },
-            { month: "2023-09", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2023-10", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2023-10", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2023-10", Product: "Biktarvy Ph-6", dataValue: 90,  comment: null },
-            { month: "2023-10", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2023-11", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2023-11", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2023-11", Product: "Biktarvy Ph-6", dataValue: 95,  comment: null },
-            { month: "2023-11", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-            { month: "2023-12", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2023-12", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2023-12", Product: "Biktarvy Ph-6", dataValue: 100,  comment: null },
-            { month: "2023-12", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
-
-
-
-            { month: "2024-01", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2024-01", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2024-01", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2024-01", Product: "Biktarvy Ph-7", dataValue: 0,  comment: null },
-
-            { month: "2024-02", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2024-02", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2024-02", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2024-02", Product: "Biktarvy Ph-7", dataValue: 12,  comment: null },
-
-            { month: "2024-03", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2024-03", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2024-03", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2024-03", Product: "Biktarvy Ph-7", dataValue: 13,  comment: null },
-
-            { month: "2024-04", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2024-04", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2024-04", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2024-04", Product: "Biktarvy Ph-7", dataValue: 15,  comment: null },
-
-            { month: "2024-05", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2024-05", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2024-05", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2024-05", Product: "Biktarvy Ph-7", dataValue: 10,  comment: null },
-
-            { month: "2024-06", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2024-06", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2024-06", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2024-06", Product: "Biktarvy Ph-7", dataValue: 9,  comment: "Phase 7" },
-
-            { month: "2024-07", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2024-07", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2024-07", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2024-07", Product: "Biktarvy Ph-7", dataValue: 19,  comment: null },
-
-            { month: "2024-08", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2024-08", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2024-08", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2024-08", Product: "Biktarvy Ph-7", dataValue: 20,  comment: null },
-
-            { month: "2024-09", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2024-09", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2024-09", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2024-09", Product: "Biktarvy Ph-7", dataValue: 35,  comment: null },
-
-            { month: "2024-10", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2024-10", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2024-10", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2024-10", Product: "Biktarvy Ph-7", dataValue: 45,  comment: null },
-
-            { month: "2024-11", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2024-11", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2024-11", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2024-11", Product: "Biktarvy Ph-7", dataValue: 40,  comment: null },
-
-            { month: "2024-12", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2024-12", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2024-12", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2024-12", Product: "Biktarvy Ph-7", dataValue: 30,  comment: null },
-
-
-            { month: "2025-01", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2025-01", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2025-01", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2025-01", Product: "Biktarvy Ph-8", dataValue: 0,  comment: null },
-
-            { month: "2025-02", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2025-02", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2025-02", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2025-02", Product: "Biktarvy Ph-8", dataValue: 40,  comment: null },
-
-            { month: "2025-03", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2025-03", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2025-03", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2025-03", Product: "Biktarvy Ph-8", dataValue: 45,  comment: null },
-
-            { month: "2025-04", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2025-04", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2025-04", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2025-04", Product: "Biktarvy Ph-8", dataValue: 50,  comment: null },
-
-            { month: "2025-05", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2025-05", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2025-05", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2025-05", Product: "Biktarvy Ph-8", dataValue: 55,  comment: null },
-
-            { month: "2025-06", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2025-06", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2025-06", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2025-06", Product: "Biktarvy Ph-8", dataValue: 60,  comment: "Phase 8" },
-
-            { month: "2025-07", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2025-07", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2025-07", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2025-07", Product: "Biktarvy Ph-8", dataValue: 69,  comment: null },
-
-            { month: "2025-08", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2025-08", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2025-08", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2025-08", Product: "Biktarvy Ph-8", dataValue: 70,  comment: null },
-
-            { month: "2025-09", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2025-09", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2025-09", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2025-09", Product: "Biktarvy Ph-8", dataValue: 75,  comment: null },
-
-            { month: "2025-10", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2025-10", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2025-10", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2025-10", Product: "Biktarvy Ph-8", dataValue: 75,  comment: null },
-
-            { month: "2025-11", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2025-11", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2025-11", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2025-11", Product: "Biktarvy Ph-8", dataValue: 70,  comment: null },
-
-            { month: "2025-12", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
-            { month: "2025-12", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
-            { month: "2025-12", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
-            { month: "2025-12", Product: "Biktarvy Ph-8", dataValue: 80,  comment: null },
-
- 
-        ];
-
-    const months = [...new Set(data.map(item => item.month))];
-
-    const formattedMonths = months.map(month => {
-        const [year, monthNum] = month.split('-');
-        const date = new Date(year, monthNum - 1);
-        return date.toLocaleString('default', { month: 'short', year: '2-digit' });
-    });
-
-    const Products = [...new Set(data.map(item => item.Product))];
-
-    const ProductColors = {
-        "Biktarvy Ph-1": "#FF6384",
-        "Biktarvy Ph-2": "#36A2EB",
-        "Biktarvy Ph-3": "#FFCE56",
-        "Biktarvy Ph-8": "#4BC0C0",
-        "Biktarvy Ph-4": "#ff0000",
-        "Biktarvy Ph-5": "#ee82ee",
-        "Biktarvy Ph-6": "#3cb371",
-        "Biktarvy Ph-7": "#1e8449"
-    };
-
-    const datasetsActual = Products.map(Product => ({
-        label: `${Product}`,
-        data: Array(months.length).fill(null),
-        borderColor: ProductColors[Product],
-        borderWidth: 3,
-        fill: false,
-        tension: 0.0,
-        spanGaps: true,
-        pointRadius: (ctx) => {
-        const index = ctx.dataIndex;
-        const month = months[index]?.split('-')[1]; // Extract the month part
-            return month === '01' || month === '12' ? 5 : 0; // Show dot for January and December
-        },
-    }));
-
-    const ctx = document.getElementById('myChart').getContext('2d');
-    let isPaused = false; 
-
-    const backgroundPlugin = {
-        id: 'backgroundColorPlugin',
-
-        beforeDraw: (chart) => {
-            const ctx = chart.ctx;
-            const { chartArea, scales } = chart;
-                       
-            // Clear the existing background
-            ctx.save();
-            ctx.fillStyle = 'white'; 
-            ctx.fillRect(chartArea.left, chartArea.top, chartArea.width, chartArea.height);
-
-            const monthsPerYear = 12; 
-            const totalMonths = months.length;
-
-            let startX = chartArea.left;
-
-            for (let i = 0; i < totalMonths; i += monthsPerYear) {
-                const [year, month] = months[i]?.split('-') || [];
-                if (!year) continue;
-
-                
-                const color = parseInt(year) % 2 === 0 ? '#edf0f2' : '#dee1e3'; 
-
-                const endX = scales.x.getPixelForValue(i + monthsPerYear) || chartArea.right;
-
-                ctx.fillStyle = color;
-                ctx.fillRect(startX, chartArea.top, endX - startX, chartArea.height);
-
-                startX = endX;
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Line Chart with Dynamic Annotations</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+        <style>
+            body {
+                /* background-color: #ebf1f5; */
+                font-family: Arial, sans-serif;
             }
+            h2 {
+                font-size: 42px;
+                color: #d77777;
+                text-align: left;
+                margin-left: 220px;
+            }
+            canvas {
+                display: block;
+                margin: 0 auto;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Performace of Biktarvy</h2>
+        <canvas id="myChart" width="1200" height="500"></canvas>
+        <script>
+            const data = [
+                    { month: "2018-01", Product: "Biktarvy Ph-1", dataValue: 0 , comment: null },
+                    { month: "2018-01", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
+                    { month: "2018-01", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2018-01", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
 
-            ctx.restore();
-        },
-        beforeInit(chart) {
-            const fitValue = chart.legend.fit;
+                    { month: "2018-02", Product: "Biktarvy Ph-1", dataValue: 12 , comment: null },
+                    { month: "2018-02", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
+                    { month: "2018-02", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2018-02", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
 
-            // Adjust the fit function to modify legend height
-            chart.legend.fit = function () {
-                fitValue.bind(chart.legend)();
-                this.height += 30; // Increase the height of the legend
+                    { month: "2018-03", Product: "Biktarvy Ph-1", dataValue: 6 , comment: null },
+                    { month: "2018-03", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
+                    { month: "2018-03", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2018-03", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2018-04", Product: "Biktarvy Ph-1", dataValue: 7 , comment: null },
+                    { month: "2018-04", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
+                    { month: "2018-04", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2018-04", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2018-05", Product: "Biktarvy Ph-1", dataValue: 11 , comment: null },
+                    { month: "2018-05", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
+                    { month: "2018-05", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2018-05", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2018-06", Product: "Biktarvy Ph-1", dataValue: 10 , comment: '+42%' },
+                    { month: "2018-06", Product: "Biktarvy Ph-2", dataValue: null , comment:  null},
+                    { month: "2018-06", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2018-06", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2018-07", Product: "Biktarvy Ph-1", dataValue: 17 , comment: null },
+                    { month: "2018-07", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
+                    { month: "2018-07", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2018-07", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2018-08", Product: "Biktarvy Ph-1", dataValue: 19 , comment: null },
+                    { month: "2018-08", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
+                    { month: "2018-08", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2018-08", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2018-09", Product: "Biktarvy Ph-1", dataValue: 30 , comment: null },
+                    { month: "2018-09", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
+                    { month: "2018-09", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2018-09", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2018-10", Product: "Biktarvy Ph-1", dataValue: 36 ,  comment: null },
+                    { month: "2018-10", Product: "Biktarvy Ph-2", dataValue: null ,  comment: null },
+                    { month: "2018-10", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
+                    { month: "2018-10", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
+
+                    { month: "2018-11", Product: "Biktarvy Ph-1", dataValue: 35 ,  comment: null },
+                    { month: "2018-11", Product: "Biktarvy Ph-2", dataValue: null ,  comment: null },
+                    { month: "2018-11", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
+                    { month: "2018-11", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
+
+                    { month: "2018-12", Product: "Biktarvy Ph-1", dataValue: 42 ,  comment: null },
+                    { month: "2018-12", Product: "Biktarvy Ph-2", dataValue: null ,  comment: null },
+                    { month: "2018-12", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
+                    { month: "2018-12", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
+
+
+                    { month: "2019-01", Product: "Biktarvy Ph-2", dataValue:  0, comment: null },
+                    { month: "2019-01", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2019-01", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+                    { month: "2019-01", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
+
+                    { month: "2019-02", Product: "Biktarvy Ph-2", dataValue: 7 , comment: null },
+                    { month: "2019-02", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2019-02", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+                    { month: "2019-02", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
+
+                    { month: "2019-03", Product: "Biktarvy Ph-2", dataValue: 20 , comment: null },
+                    { month: "2019-03", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2019-03", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+                    { month: "2019-03", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
+
+                    { month: "2019-04", Product: "Biktarvy Ph-2", dataValue: 42 , comment: null },
+                    { month: "2019-04", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2019-04", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+                    { month: "2019-04", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
+
+                    { month: "2019-05", Product: "Biktarvy Ph-2", dataValue: 45 , comment: null },
+                    { month: "2019-05", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2019-05", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+                    { month: "2019-05", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
+
+                    { month: "2019-06", Product: "Biktarvy Ph-2", dataValue: 46 , comment: "+54%" },
+                    { month: "2019-06", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2019-06", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+                    { month: "2019-06", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
+
+                    { month: "2019-07", Product: "Biktarvy Ph-2", dataValue: 47 , comment: null },
+                    { month: "2019-07", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2019-07", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+                    { month: "2019-07", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
+
+                    { month: "2019-08", Product: "Biktarvy Ph-2", dataValue: 40 , comment: null },
+                    { month: "2019-08", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2019-08", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+                    { month: "2019-08", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
+
+                    { month: "2019-09", Product: "Biktarvy Ph-2", dataValue: 35 , comment: null },
+                    { month: "2019-09", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2019-09", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+                    { month: "2019-09", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
+
+                    { month: "2019-10", Product: "Biktarvy Ph-2", dataValue: 36 ,  comment: null },
+                    { month: "2019-10", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
+                    { month: "2019-10", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
+                    { month: "2019-10", Product: "Biktarvy Ph-4", dataValue: null ,  comment: null },
+
+                    { month: "2019-11", Product: "Biktarvy Ph-2", dataValue: 39 ,  comment: null },
+                    { month: "2019-11", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
+                    { month: "2019-11", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
+                    { month: "2019-11", Product: "Biktarvy Ph-4", dataValue: null ,  comment: null },
+
+                    { month: "2019-12", Product: "Biktarvy Ph-2", dataValue: 54 ,  comment: null },
+                    { month: "2019-12", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
+                    { month: "2019-12", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
+                    { month: "2019-12", Product: "Biktarvy Ph-4", dataValue: null ,  comment: null },
+
+                    { month: "2020-01", Product: "Biktarvy Ph-2", dataValue: null , comment: null },
+                    { month: "2020-01", Product: "Biktarvy Ph-3", dataValue: 0 , comment: null },
+                    { month: "2020-01", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+                    { month: "2020-01", Product: "Biktarvy Ph-4", dataValue: null , comment: null },
+
+                    { month: "2020-02", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2020-02", Product: "Biktarvy Ph-3", dataValue: -4 , comment: null },
+                    { month: "2020-02", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2020-02", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2020-03", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2020-03", Product: "Biktarvy Ph-3", dataValue: -10 , comment: null },
+                    { month: "2020-03", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2020-03", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2020-04", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2020-04", Product: "Biktarvy Ph-3", dataValue: -5 , comment: null },
+                    { month: "2020-04", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2020-04", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2020-05", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2020-05", Product: "Biktarvy Ph-3", dataValue: -18 , comment: null },
+                    { month: "2020-05", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2020-05", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2020-06", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2020-06", Product: "Biktarvy Ph-3", dataValue: -15 , comment: "+25%" },
+                    { month: "2020-06", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2020-06", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2020-07", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2020-07", Product: "Biktarvy Ph-3", dataValue: -12 , comment: null },
+                    { month: "2020-07", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2020-07", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2020-08", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2020-08", Product: "Biktarvy Ph-3", dataValue: 2 , comment: null },
+                    { month: "2020-08", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2020-08", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2020-09", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2020-09", Product: "Biktarvy Ph-3", dataValue: 4 , comment: null },
+                    { month: "2020-09", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2020-09", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2020-10", Product: "Biktarvy Ph-1", dataValue: null ,  comment: null },
+                    { month: "2020-10", Product: "Biktarvy Ph-3", dataValue: 2 ,  comment: null },
+                    { month: "2020-10", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
+                    { month: "2020-10", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
+
+                    { month: "2020-11", Product: "Biktarvy Ph-1", dataValue: null ,  comment: null },
+                    { month: "2020-11", Product: "Biktarvy Ph-3", dataValue: 18 ,  comment: null },
+                    { month: "2020-11", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
+                    { month: "2020-11", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
+
+                    { month: "2020-12", Product: "Biktarvy Ph-1", dataValue: null ,  comment: null },
+                    { month: "2020-12", Product: "Biktarvy Ph-3", dataValue: 25 ,  comment: null },
+                    { month: "2020-12", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
+                    { month: "2020-12", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
+
+                    { month: "2021-01", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2021-01", Product: "Biktarvy Ph-4", dataValue: 0 , comment: null },
+                    { month: "2021-01", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2021-01", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2021-02", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2021-02", Product: "Biktarvy Ph-4", dataValue: 25 , comment: null },
+                    { month: "2021-02", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2021-02", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2021-03", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2021-03", Product: "Biktarvy Ph-4", dataValue: 28 , comment: null },
+                    { month: "2021-03", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2021-03", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2021-04", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2021-04", Product: "Biktarvy Ph-4", dataValue: 30 , comment: null },
+                    { month: "2021-04", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2021-04", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2021-05", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2021-05", Product: "Biktarvy Ph-4", dataValue: 32 , comment: null },
+                    { month: "2021-05", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2021-05", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2021-06", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2021-06", Product: "Biktarvy Ph-4", dataValue: 34 , comment: "+58%" },
+                    { month: "2021-06", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2021-06", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2021-07", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2021-07", Product: "Biktarvy Ph-4", dataValue: 42 , comment: null },
+                    { month: "2021-07", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2021-07", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2021-08", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2021-08", Product: "Biktarvy Ph-4", dataValue: 49 , comment: null },
+                    { month: "2021-08", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2021-08", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2021-09", Product: "Biktarvy Ph-1", dataValue: null , comment: null },
+                    { month: "2021-09", Product: "Biktarvy Ph-4", dataValue: 54 , comment: null },
+                    { month: "2021-09", Product: "Biktarvy Ph-3", dataValue: null , comment: null },
+                    { month: "2021-09", Product: "Biktarvy Ph-8", dataValue: null , comment: null },
+
+                    { month: "2021-10", Product: "Biktarvy Ph-1", dataValue: null ,  comment: null },
+                    { month: "2021-10", Product: "Biktarvy Ph-4", dataValue: 55 ,  comment: null },
+                    { month: "2021-10", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
+                    { month: "2021-10", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
+
+                    { month: "2021-11", Product: "Biktarvy Ph-1", dataValue: null ,  comment: null },
+                    { month: "2021-11", Product: "Biktarvy Ph-4", dataValue: 58 ,  comment: null },
+                    { month: "2021-11", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
+                    { month: "2021-11", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
+
+                    { month: "2021-12", Product: "Biktarvy Ph-1", dataValue: null ,  comment: null },
+                    { month: "2021-12", Product: "Biktarvy Ph-4", dataValue: 58 ,  comment: null },
+                    { month: "2021-12", Product: "Biktarvy Ph-3", dataValue: null ,  comment: null },
+                    { month: "2021-12", Product: "Biktarvy Ph-8", dataValue: null ,  comment: null },
+
+
+
+                    { month: "2022-01", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2022-01", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2022-01", Product: "Biktarvy Ph-5", dataValue: 0,  comment: null },
+                    { month: "2022-01", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2022-02", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2022-02", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2022-02", Product: "Biktarvy Ph-5", dataValue: 2,  comment: null },
+                    { month: "2022-02", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2022-03", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2022-03", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2022-03", Product: "Biktarvy Ph-5", dataValue: 4,  comment: null },
+                    { month: "2022-03", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2022-04", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2022-04", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2022-04", Product: "Biktarvy Ph-5", dataValue: 18,  comment: null },
+                    { month: "2022-04", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2022-05", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2022-05", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2022-05", Product: "Biktarvy Ph-5", dataValue: 22,  comment: null },
+                    { month: "2022-05", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2022-06", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2022-06", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2022-06", Product: "Biktarvy Ph-5", dataValue: 24,  comment: "+50%" },
+                    { month: "2022-06", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2022-07", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2022-07", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2022-07", Product: "Biktarvy Ph-5", dataValue: 30,  comment: null },
+                    { month: "2022-07", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2022-08", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2022-08", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2022-08", Product: "Biktarvy Ph-5", dataValue: 34,  comment: null },
+                    { month: "2022-08", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2022-09", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2022-09", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2022-09", Product: "Biktarvy Ph-5", dataValue: 35,  comment: null },
+                    { month: "2022-09", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2022-10", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2022-10", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2022-10", Product: "Biktarvy Ph-5", dataValue: 30,  comment: null },
+                    { month: "2022-10", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2022-11", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2022-11", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2022-11", Product: "Biktarvy Ph-5", dataValue: 45,  comment: null },
+                    { month: "2022-11", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2022-12", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2022-12", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2022-12", Product: "Biktarvy Ph-5", dataValue: 50,  comment: null },
+                    { month: "2022-12", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2023-01", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2023-01", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2023-01", Product: "Biktarvy Ph-6", dataValue: 0,  comment: null },
+                    { month: "2023-01", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2023-02", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2023-02", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2023-02", Product: "Biktarvy Ph-6", dataValue: 22,  comment: null },
+                    { month: "2023-02", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2023-03", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2023-03", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2023-03", Product: "Biktarvy Ph-6", dataValue: 24,  comment: null },
+                    { month: "2023-03", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2023-04", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2023-04", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2023-04", Product: "Biktarvy Ph-6", dataValue: 38,  comment: null },
+                    { month: "2023-04", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2023-05", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2023-05", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2023-05", Product: "Biktarvy Ph-6", dataValue: 42,  comment: null },
+                    { month: "2023-05", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2023-06", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2023-06", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2023-06", Product: "Biktarvy Ph-6", dataValue: 54,  comment: "+100%" },
+                    { month: "2023-06", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2023-07", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2023-07", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2023-07", Product: "Biktarvy Ph-6", dataValue: 60,  comment: null },
+                    { month: "2023-07", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2023-08", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2023-08", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2023-08", Product: "Biktarvy Ph-6", dataValue: 74,  comment: null },
+                    { month: "2023-08", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2023-09", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2023-09", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2023-09", Product: "Biktarvy Ph-6", dataValue: 85,  comment: null },
+                    { month: "2023-09", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2023-10", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2023-10", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2023-10", Product: "Biktarvy Ph-6", dataValue: 90,  comment: null },
+                    { month: "2023-10", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2023-11", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2023-11", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2023-11", Product: "Biktarvy Ph-6", dataValue: 95,  comment: null },
+                    { month: "2023-11", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+                    { month: "2023-12", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2023-12", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2023-12", Product: "Biktarvy Ph-6", dataValue: 95,  comment: null },
+                    { month: "2023-12", Product: "Biktarvy Ph-8", dataValue: null,  comment: null },
+
+
+
+                    { month: "2024-01", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2024-01", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2024-01", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2024-01", Product: "Biktarvy Ph-7", dataValue: 0,  comment: null },
+
+                    { month: "2024-02", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2024-02", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2024-02", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2024-02", Product: "Biktarvy Ph-7", dataValue: 12,  comment: null },
+
+                    { month: "2024-03", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2024-03", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2024-03", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2024-03", Product: "Biktarvy Ph-7", dataValue: 13,  comment: null },
+
+                    { month: "2024-04", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2024-04", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2024-04", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2024-04", Product: "Biktarvy Ph-7", dataValue: 15,  comment: null },
+
+                    { month: "2024-05", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2024-05", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2024-05", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2024-05", Product: "Biktarvy Ph-7", dataValue: 10,  comment: null },
+
+                    { month: "2024-06", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2024-06", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2024-06", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2024-06", Product: "Biktarvy Ph-7", dataValue: 9,  comment: "+30%" },
+
+                    { month: "2024-07", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2024-07", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2024-07", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2024-07", Product: "Biktarvy Ph-7", dataValue: 19,  comment: null },
+
+                    { month: "2024-08", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2024-08", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2024-08", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2024-08", Product: "Biktarvy Ph-7", dataValue: 20,  comment: null },
+
+                    { month: "2024-09", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2024-09", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2024-09", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2024-09", Product: "Biktarvy Ph-7", dataValue: 35,  comment: null },
+
+                    { month: "2024-10", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2024-10", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2024-10", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2024-10", Product: "Biktarvy Ph-7", dataValue: 45,  comment: null },
+
+                    { month: "2024-11", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2024-11", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2024-11", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2024-11", Product: "Biktarvy Ph-7", dataValue: 40,  comment: null },
+
+                    { month: "2024-12", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2024-12", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2024-12", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2024-12", Product: "Biktarvy Ph-7", dataValue: 30,  comment: null },
+
+
+                    { month: "2025-01", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2025-01", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2025-01", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2025-01", Product: "Biktarvy Ph-8", dataValue: 0,  comment: null },
+
+                    { month: "2025-02", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2025-02", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2025-02", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2025-02", Product: "Biktarvy Ph-8", dataValue: 40,  comment: null },
+
+                    { month: "2025-03", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2025-03", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2025-03", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2025-03", Product: "Biktarvy Ph-8", dataValue: 45,  comment: null },
+
+                    { month: "2025-04", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2025-04", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2025-04", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2025-04", Product: "Biktarvy Ph-8", dataValue: 50,  comment: null },
+
+                    { month: "2025-05", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2025-05", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2025-05", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2025-05", Product: "Biktarvy Ph-8", dataValue: 55,  comment: null },
+
+                    { month: "2025-06", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2025-06", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2025-06", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2025-06", Product: "Biktarvy Ph-8", dataValue: 60,  comment: "+ 80%" },
+
+                    { month: "2025-07", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2025-07", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2025-07", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2025-07", Product: "Biktarvy Ph-8", dataValue: 69,  comment: null },
+
+                    { month: "2025-08", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2025-08", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2025-08", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2025-08", Product: "Biktarvy Ph-8", dataValue: 70,  comment: null },
+
+                    { month: "2025-09", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2025-09", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2025-09", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2025-09", Product: "Biktarvy Ph-8", dataValue: 75,  comment: null },
+
+                    { month: "2025-10", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2025-10", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2025-10", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2025-10", Product: "Biktarvy Ph-8", dataValue: 75,  comment: null },
+
+                    { month: "2025-11", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2025-11", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2025-11", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2025-11", Product: "Biktarvy Ph-8", dataValue: 70,  comment: null },
+
+                    { month: "2025-12", Product: "Biktarvy Ph-1", dataValue: null,  comment: null },
+                    { month: "2025-12", Product: "Biktarvy Ph-2", dataValue: null,  comment: null },
+                    { month: "2025-12", Product: "Biktarvy Ph-3", dataValue: null,  comment: null },
+                    { month: "2025-12", Product: "Biktarvy Ph-8", dataValue: 80,  comment: null },
+
+        
+                ];
+
+            const months = [...new Set(data.map(item => item.month))];
+
+            const formattedMonths = months.map(month => {
+                const [year, monthNum] = month.split('-');
+                const date = new Date(year, monthNum - 1);
+                return date.toLocaleString('default', { month: 'short', year: '2-digit' });
+            });
+
+            const Products = [...new Set(data.map(item => item.Product))];
+
+            const ProductColors = {
+                "Biktarvy Ph-1": "#FF6384",
+                "Biktarvy Ph-2": "#36A2EB",
+                "Biktarvy Ph-3": "#FFCE56",
+                "Biktarvy Ph-8": "#4BC0C0",
+                "Biktarvy Ph-4": "#ff0000",
+                "Biktarvy Ph-5": "#ee82ee",
+                "Biktarvy Ph-6": "#3cb371",
+                "Biktarvy Ph-7": "#1e8449"
             };
-        }
-    };
 
-    const maxDataValue = Math.max(...data.map(item => item.dataValue));
-
-    // Determine a suitable Y-axis maximum value, slightly higher than the max data value
-    const yAxisMax = Math.ceil(maxDataValue / 10) * 10 + 10; // Round up to the nearest 10 and add some padding
-
-
-    const chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [...datasetsActual]
-        },
-        options: {
-            responsive: true,
-            animation: {
-                duration: 100,
-                easing: 'linear',
-                onProgress: function (animation) {
-                    // Optional callback during animation
+            const datasetsActual = Products.map(Product => ({
+                label: `${Product}`,
+                data: Array(months.length).fill(null),
+                borderColor: ProductColors[Product],
+                borderWidth: 3,
+                fill: false,
+                tension: 0.0,
+                spanGaps: true,
+                pointRadius: (ctx) => {
+                const index = ctx.dataIndex;
+                const month = months[index]?.split('-')[1]; // Extract the month part
+                    return month === '01' || month === '12' ? 2 : 0; // Show dot for January and December
                 },
-                onComplete: function () {
-                    // Optional callback after animation completes
-                    console.log('Animation complete!');
-                }
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: false,
-                        text: 'Month',
-                        font: { size: 18 }
-                    },
-                    ticks: {
-                        font: {
-                            size: 14,
-                            weight:'bold',
-                            //xAdjust:10
-                        },
-                        autoSkip: false,
-                        callback: (value, index) => {
-                            const month = months[index];
-                            if (!month) return ''; // Guard against out-of-bounds
-                            const [year, monthNum] = month.split('-');
-                            if (monthNum === '01' & year!='2018' ) {
-                                return year-1;
-                            }
-                            return '';
-                        },
-                        maxRotation: 0,
-                        minRotation: 0
-                        //align: 'end'
-                    },
-                    grid: {
-                        display: false
+            }));
+
+            const ctx = document.getElementById('myChart').getContext('2d');
+            let isPaused = false; 
+
+            const backgroundPlugin = {
+                id: 'backgroundColorPlugin',
+
+                beforeDraw: (chart) => {
+                    const ctx = chart.ctx;
+                    const { chartArea, scales } = chart;
+                            
+                    // Clear the existing background
+                    ctx.save();
+                    ctx.fillStyle = 'white'; 
+                    ctx.fillRect(chartArea.left, chartArea.top, chartArea.width, chartArea.height);
+
+                    const monthsPerYear = 12; 
+                    const totalMonths = months.length;
+
+                    let startX = chartArea.left;
+
+                    for (let i = 0; i < totalMonths; i += monthsPerYear) {
+                        const [year, month] = months[i]?.split('-') || [];
+                        if (!year) continue;
+
+                        
+                        const color = parseInt(year) % 2 === 0 ? '#edf0f2' : '#dee1e3'; 
+
+                        const endX = scales.x.getPixelForValue(i + monthsPerYear) || chartArea.right;
+
+                        ctx.fillStyle = color;
+                        ctx.fillRect(startX, chartArea.top, endX - startX, chartArea.height);
+
+                        startX = endX;
                     }
+
+                    ctx.restore();
                 },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Change (%)',
-                        font: {
-                            size: 18
-                        }
-                    },
-                    ticks: {
-                        font: {
-                            size: 14,
-                            weight:'bold'
-                        },
-                        stepSize: yAxisMax/10,
-                        maxTicksLimit: 10, 
-                    },
-                    beginAtZero: true,
-                    max:yAxisMax,
-                        // border: {
-                        //     dash: [2,4],
-                        // },
-                    grid: {
-                        drawBorder: true,
-                        color: (ctx) => {
-                            if (ctx.tick.value === 0) {
-                                return 'black'; // Make the y=0 line dark black
-                            }
-                            return '#E5E5E5';
-                        },
-                        lineWidth: (ctx) => {
-                            if (ctx.tick.value === 0) {
-                                return 1.5; // Make the y=0 line thicker
-                            }
-                            return 1;
-                        },
-                        borderDash: (ctx) => {
-                            if (ctx.tick.value === 0) {
-                                return []; // Solid line for y=0
-                            }
-                            return [2, 5]; // Dotted line for other grid lines
-                        }
-                    }
+                beforeInit(chart) {
+                    const fitValue = chart.legend.fit;
+               
+                    chart.legend.fit = function () {
+                        fitValue.bind(chart.legend)();
+                        this.height += 30; 
+                    };
                 }
-            },
-            plugins: {
-                legend: {
-                    display:false,
-                    position: 'top',
-                    labels: {
-                        font: {
-                            size: 18
+            };
+
+            const maxDataValue = Math.max(...data.map(item => item.dataValue));
+
+            const yAxisMax = Math.ceil(maxDataValue / 10) * 10 + 10; 
+
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [...datasetsActual]
+                },
+                options: {
+                    responsive: true,
+                    animation: {
+                        duration: 100,
+                        easing: 'linear',
+                        onProgress: function (animation) {
                             
                         },
-                        boxWidth: 30
+                        onComplete: function () {
+                        
+                            console.log('Animation complete!');
+                        }
                     },
+                    layout: {
+                        padding: {
+                            left: 40, // Adds 20px padding to the left of the entire chart area
+                        },
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: false, text: 'Month', font: { size: 18 }
+                            },
+                            ticks: {
+                                font: {
+                                    size: 14, weight:'bold'
+                                },
+                                autoSkip: false,
+                                callback: (value, index) => {
+                                    const month = months[index];
+                                    if (!month) return '';
+                                    const [year, monthNum] = month.split('-');
+                                    if (monthNum === '12' & year!='2017' ) {
+                                        return year;
+                                    }else if (monthNum === '12' & year === '2025'){
+                                        return year;
+                                    }
+                                    return '';
+                                },
+                                
+                                maxRotation: 0,
+                                minRotation: 0
+                            },
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Change (%)',
+                                font: { size: 18 }
+                            },
+                            ticks: 
+                            {
+                                font: 
+                                { size: 14, weight:'bold'},
+                                stepSize: yAxisMax/10,
+                                maxTicksLimit: 10, 
+                            },
+                            beginAtZero: true,
+                            border:{dash: (ctx) => {
+                                    if (ctx.tick.value === 0) {return [];}
+                                    return [6, 5];
+                                }},
+                            max:yAxisMax,
+                            grid: {
+                                drawBorder: true,
+                                color: (ctx) => {
+                                    if (ctx.tick.value === 0) { return 'black'; }
+                                    return '#E5E5E5';
+                                },
+                                lineWidth: (ctx) => {
+                                    if (ctx.tick.value === 0) { return 1.5; }
+                                    return 1;
+                                },
+                                borderDash: (ctx) => {
+                                    if (ctx.tick.value === 0) {return [];}
+                                    return [2, 5];
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display:false,
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: 18    
+                                },
+                                boxWidth: 30
+                            },
+                        },
+                        annotation: { annotations: {} }
+                    }
                 },
-                annotation: {
-                    annotations: {}
+                plugins: [backgroundPlugin] // Register the plugin
+            });
+
+            let currentMonthIndex = 0;
+
+            function updateChart() {
+                if (currentMonthIndex >= months.length || isPaused) return;
+
+                const currentMonth = months[currentMonthIndex];
+                const [year, monthNum] = currentMonth.split('-');
+                
+                if (monthNum === '12') {
+                    chart.data.labels.push(year);
+                } else {
+                    chart.data.labels.push('');
+                }
+
+                chart.data.datasets.forEach(dataset => {
+                    const Product = dataset.label.split(" - ")[0];
+                    const entry = data.find(item => item.Product === Product && item.month === currentMonth);
+                    dataset.data[currentMonthIndex] = entry ? entry.dataValue : null;
+                });
+
+                const currentMonthComments = data.filter(
+                    item => item.month === currentMonth && item.comment
+                );
+                const maxYTick = chart.scales['y'].max;
+                    
+                const yScale = chart.scales.y;
+                const ticks = yScale.ticks;
+                if (ticks.length < 2) return; 
+                const firstTickValue = yScale.getPixelForValue(ticks[0].value);
+                const secondTickValue = yScale.getPixelForValue(ticks[1].value);
+                const annotationY = (firstTickValue + secondTickValue) / 2;
+
+                currentMonthComments.forEach(item => {
+                    chart.options.plugins.annotation.annotations[item.Product] = {
+                        type: 'label',
+                        xValue: currentMonthIndex,
+                        yValue: yAxisMax-5,
+                        backgroundColor: ProductColors[item.Product],
+                        opacity: 0.2,
+                        content: item.comment,
+                        position: 'top',
+                        font: { size: 12, weight: 'bold' },
+                        color: 'white'
+                    };
+                });
+
+                chart.update();
+                currentMonthIndex++;
+                if (!isPaused) {
+                    setTimeout(updateChart, 300);
                 }
             }
-        },
-        plugins: [backgroundPlugin] // Register the plugin
-    });
+            
+            updateChart();
 
-    let currentMonthIndex = 0;
-
-    function updateChart() {
-        if (currentMonthIndex >= months.length || isPaused) return;
-
-        const currentMonth = months[currentMonthIndex];
-        const [year, monthNum] = currentMonth.split('-');
-        
-        // Only push December's year to the x-axis labels
-        if (monthNum === '12') {
-            chart.data.labels.push(year);
-        } else {
-            chart.data.labels.push(''); // Maintain alignment but hide label
-        }
-
-        chart.data.datasets.forEach(dataset => {
-            const Product = dataset.label.split(" - ")[0];
-            const entry = data.find(item => item.Product === Product && item.month === currentMonth);
-            dataset.data[currentMonthIndex] = entry ? entry.dataValue : null;
-        });
-
-        const currentMonthComments = data.filter(
-            item => item.month === currentMonth && item.comment
-        );
-        const maxYTick = chart.scales['y'].max;
-                // Calculate the Y-value between the first and second ticks
-        const yScale = chart.scales.y;
-        const ticks = yScale.ticks;
-        if (ticks.length < 2) return; // Ensure there are enough ticks
-        const firstTickValue = yScale.getPixelForValue(ticks[0].value);
-        const secondTickValue = yScale.getPixelForValue(ticks[1].value);
-        const annotationY = (firstTickValue + secondTickValue) / 2;
-
-        currentMonthComments.forEach(item => {
-            chart.options.plugins.annotation.annotations[item.Product] = {
-                type: 'label',
-                xValue: currentMonthIndex,
-                yValue: yAxisMax-5,
-                backgroundColor: ProductColors[item.Product],
-                opacity: 0.2,
-                content: item.comment,
-                position: 'top',
-                font: { size: 12, weight: 'bold' },
-                color: 'white'
-            };
-        });
-
-        chart.update();
-        currentMonthIndex++;
-        if (!isPaused) {
-            setTimeout(updateChart, 300);
-        }
-    }
-
-    updateChart(); // Start the chart update loop
-</script>
-
-</body>
+        </script>
+    </body>
 </html>
