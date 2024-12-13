@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Line Chart with Dynamic Annotations</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+    <style>
+        body {
+            /* background-color: antiquewhite; */
+            font-family: Arial, sans-serif;
+        }
+        h2 {
+            font-size: 32px;
+            color: grey;
+            text-align: center;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <h2>Actual vs Forecasted Volume for All Products</h2>
+    <canvas id="myChart" width="1200" height="500"></canvas>
+
+    <script>
+         const data = [
+            { month: "2023-01", Product: "Product A", actualVolume: 3400 , forcastedVolume: null, comment: null },
+            { month: "2023-01", Product: "Product B", actualVolume: 2500 , forcastedVolume: null, comment: null },
+            { month: "2023-01", Product: "Product C", actualVolume: 3200 , forcastedVolume: null, comment: null },
+            { month: "2023-01", Product: "Product D", actualVolume: 2900 , forcastedVolume: null, comment: null },
+
+            { month: "2023-02", Product: "Product A", actualVolume: 3400 , forcastedVolume: null, comment: null },
+            { month: "2023-02", Product: "Product B", actualVolume: 2400 , forcastedVolume: null, comment: null },
+            { month: "2023-02", Product: "Product C", actualVolume: 3300 , forcastedVolume: null, comment: null },
+            { month: "2023-02", Product: "Product D", actualVolume: 3000 , forcastedVolume: null, comment: null },
+
+            { month: "2023-03", Product: "Product A", actualVolume: 4000 , forcastedVolume: null, comment: null },
+            { month: "2023-03", Product: "Product B", actualVolume: 2700 , forcastedVolume: null, comment: null },
+            { month: "2023-03", Product: "Product C", actualVolume: 3400 , forcastedVolume: null, comment: null },
+            { month: "2023-03", Product: "Product D", actualVolume: 3100 , forcastedVolume: null, comment: null },
+
+            { month: "2023-04", Product: "Product A", actualVolume: 4200 , forcastedVolume: null, comment: null },
+            { month: "2023-04", Product: "Product B", actualVolume: 2800 , forcastedVolume: null, comment: null },
+            { month: "2023-04", Product: "Product C", actualVolume: 3600 , forcastedVolume: null, comment: null },
+            { month: "2023-04", Product: "Product D", actualVolume: 3300 , forcastedVolume: null, comment: null },
+
+            { month: "2023-05", Product: "Product A", actualVolume: 4500 , forcastedVolume: null, comment: null },
+            { month: "2023-05", Product: "Product B", actualVolume: 2900 , forcastedVolume: null, comment: null },
+            { month: "2023-05", Product: "Product C", actualVolume: 3800 , forcastedVolume: null, comment: null },
+            { month: "2023-05", Product: "Product D", actualVolume: 3500 , forcastedVolume: null, comment: null },
+
+            { month: "2023-06", Product: "Product A", actualVolume: 4800 , forcastedVolume: null, comment: null },
+            { month: "2023-06", Product: "Product B", actualVolume: 3000 , forcastedVolume: null, comment: null },
+            { month: "2023-06", Product: "Product C", actualVolume: 4000 , forcastedVolume: null, comment: null },
+            { month: "2023-06", Product: "Product D", actualVolume: 3800 , forcastedVolume: null, comment: null },
+
+            { month: "2023-07", Product: "Product A", actualVolume: 5000 , forcastedVolume: null, comment: null },
+            { month: "2023-07", Product: "Product B", actualVolume: 3200 , forcastedVolume: null, comment: null },
+            { month: "2023-07", Product: "Product C", actualVolume: 4200 , forcastedVolume: null, comment: null },
+            { month: "2023-07", Product: "Product D", actualVolume: 4000 , forcastedVolume: null, comment: null },
+
+            { month: "2023-08", Product: "Product A", actualVolume: 5200 , forcastedVolume: null, comment: null },
+            { month: "2023-08", Product: "Product B", actualVolume: 3400 , forcastedVolume: null, comment: null },
+            { month: "2023-08", Product: "Product C", actualVolume: 4400 , forcastedVolume: null, comment: null },
+            { month: "2023-08", Product: "Product D", actualVolume: 4200 , forcastedVolume: null, comment: null },
+
+            { month: "2023-09", Product: "Product A", actualVolume: 5500 , forcastedVolume: null, comment: null },
+            { month: "2023-09", Product: "Product B", actualVolume: 3600 , forcastedVolume: null, comment: null },
+            { month: "2023-09", Product: "Product C", actualVolume: 4600 , forcastedVolume: null, comment: null },
+            { month: "2023-09", Product: "Product D", actualVolume: 4500 , forcastedVolume: null, comment: null },
+
+            { month: "2023-10", Product: "Product A", actualVolume: 5800 , forcastedVolume: null, comment: null },
+            { month: "2023-10", Product: "Product B", actualVolume: 3800 , forcastedVolume: null, comment: null },
+            { month: "2023-10", Product: "Product C", actualVolume: 4800 , forcastedVolume: null, comment: null },
+            { month: "2023-10", Product: "Product D", actualVolume: 4700 , forcastedVolume: null, comment: null },
+
+            { month: "2023-11", Product: "Product A", forcastedVolume: null, actualVolume: 5800 , comment: null },
+            { month: "2023-11", Product: "Product B", forcastedVolume: null, actualVolume: 3800 , comment: null },
+            { month: "2023-11", Product: "Product C", forcastedVolume: null, actualVolume: 4800 , comment: null },
+            { month: "2023-11", Product: "Product D", forcastedVolume: null, actualVolume: 4700 , comment: null },
+
+            { month: "2023-12", Product: "Product A", forcastedVolume: null, actualVolume: 5500 , comment: null },
+            { month: "2023-12", Product: "Product B", forcastedVolume: null, actualVolume: 3700 , comment: null },
+            { month: "2023-12", Product: "Product C", forcastedVolume: null, actualVolume: 5700 , comment: null },
+            { month: "2023-12", Product: "Product D", forcastedVolume: null, actualVolume: 5100 , comment: null },
+            
+
+
+            { month: "2024-01", Product: "Product A", forcastedVolume: null, actualVolume: 5100 , comment: null },
+            { month: "2024-01", Product: "Product B", forcastedVolume: null, actualVolume: 3200 , comment: null },
+            { month: "2024-01", Product: "Product C", forcastedVolume: null, actualVolume: 4800 , comment: null },
+            { month: "2024-01", Product: "Product D", forcastedVolume: null, actualVolume: 4100 , comment: null },
+
+            { month: "2024-02", Product: "Product A", forcastedVolume: null, actualVolume: 5000 , comment: null },
+            { month: "2024-02", Product: "Product B", forcastedVolume: null, actualVolume: 3000 , comment: null },
+            { month: "2024-02", Product: "Product C", forcastedVolume: null, actualVolume: 4400 , comment: null },
+            { month: "2024-02", Product: "Product D", forcastedVolume: null, actualVolume: 3900 , comment: null },
+
+            { month: "2024-03", Product: "Product A", forcastedVolume: null, actualVolume: 4900 , comment: null },
+            { month: "2024-03", Product: "Product B", forcastedVolume: null, actualVolume: 3100 , comment: null },
+            { month: "2024-03", Product: "Product C", forcastedVolume: null, actualVolume: 4000 , comment: null },
+            { month: "2024-03", Product: "Product D", forcastedVolume: null, actualVolume: 3800 , comment: null },
+
+            { month: "2024-04", Product: "Product A", forcastedVolume: null, actualVolume: 5000 , comment: null },
+            { month: "2024-04", Product: "Product B", forcastedVolume: null, actualVolume: 3200 , comment: null },
+            { month: "2024-04", Product: "Product C", forcastedVolume: null, actualVolume: 4100 , comment: null },
+            { month: "2024-04", Product: "Product D", forcastedVolume: null, actualVolume: 3900 , comment: null },
+
+            { month: "2024-05", Product: "Product A", forcastedVolume: null, actualVolume: 5000 , comment: null },
+            { month: "2024-05", Product: "Product B", forcastedVolume: null, actualVolume: 3000 , comment: null },
+            { month: "2024-05", Product: "Product C", forcastedVolume: null, actualVolume: 4200 , comment: null },
+            { month: "2024-05", Product: "Product D", forcastedVolume: null, actualVolume: 3800 , comment: null },
+
+            { month: "2024-06", Product: "Product A", forcastedVolume: null, actualVolume: 5100 , comment: null },
+            { month: "2024-06", Product: "Product B", forcastedVolume: null, actualVolume: 3100 , comment: null },
+            { month: "2024-06", Product: "Product C", forcastedVolume: null, actualVolume: 4400 , comment: null },
+            { month: "2024-06", Product: "Product D", forcastedVolume: null, actualVolume: 3900 , comment: null },
+
+            { month: "2024-07", Product: "Product A", forcastedVolume: null, actualVolume: 5200 , comment: null },
+            { month: "2024-07", Product: "Product B", forcastedVolume: null, actualVolume: 3300 , comment: null },
+            { month: "2024-07", Product: "Product C", forcastedVolume: null, actualVolume: 4100 , comment: null },
+            { month: "2024-07", Product: "Product D", forcastedVolume: null, actualVolume: 4000 , comment: null },
+
+            { month: "2024-08", Product: "Product A", forcastedVolume: null, actualVolume: 5400 , comment: null },
+            { month: "2024-08", Product: "Product B", forcastedVolume: null, actualVolume: 3300 , comment: null },
+            { month: "2024-08", Product: "Product C", forcastedVolume: null, actualVolume: 4200 , comment: null },
+            { month: "2024-08", Product: "Product D", forcastedVolume: null, actualVolume: 4100 , comment: null },
+
+            { month: "2024-09", Product: "Product A", forcastedVolume: null, actualVolume: 5600 , comment: null },
+            { month: "2024-09", Product: "Product B", forcastedVolume: null, actualVolume: 3400 , comment: null },
+            { month: "2024-09", Product: "Product C", forcastedVolume: null, actualVolume: 4400 , comment: null },
+            { month: "2024-09", Product: "Product D", forcastedVolume: null, actualVolume: 4400 , comment: null },
+
+            { month: "2024-10", Product: "Product A", forcastedVolume: null, actualVolume: 5700 , comment: null },
+            { month: "2024-10", Product: "Product B", forcastedVolume: null, actualVolume: 3700 , comment: null },
+            { month: "2024-10", Product: "Product C", forcastedVolume: null, actualVolume: 4700 , comment: null },
+            { month: "2024-10", Product: "Product D", forcastedVolume: null, actualVolume: 4600 , comment: null },
+
+            { month: "2024-11", Product: "Product A", forcastedVolume: null, actualVolume: 5800 , comment: null },
+            { month: "2024-11", Product: "Product B", forcastedVolume: null, actualVolume: 3800 , comment: null },
+            { month: "2024-11", Product: "Product C", forcastedVolume: null, actualVolume: 4800 , comment: null },
+            { month: "2024-11", Product: "Product D", forcastedVolume: null, actualVolume: 4700 , comment: null },
+
+            { month: "2024-12", Product: "Product A", forcastedVolume: 5500, actualVolume: 5500 , comment: null },
+            { month: "2024-12", Product: "Product B", forcastedVolume: 3700, actualVolume: 3700 , comment: null },
+            { month: "2024-12", Product: "Product C", forcastedVolume: 5700, actualVolume: 5700 , comment: null },
+            { month: "2024-12", Product: "Product D", forcastedVolume: 5100, actualVolume: 5100 , comment: null },
+
+
+            { month: "2025-01", Product: "Product A", actualVolume: null, forcastedVolume: 5500 , comment: null },
+            { month: "2025-01", Product: "Product B", actualVolume: null, forcastedVolume: 4000 , comment: null },
+            { month: "2025-01", Product: "Product C", actualVolume: null, forcastedVolume: 5000 , comment: null },
+            { month: "2025-01", Product: "Product D", actualVolume: null, forcastedVolume: 5000 , comment: null },
+
+            { month: "2025-02", Product: "Product A", actualVolume: null, forcastedVolume: 5200 , comment: null },
+            { month: "2025-02", Product: "Product B", actualVolume: null, forcastedVolume: 4400 , comment: null },
+            { month: "2025-02", Product: "Product C", actualVolume: null, forcastedVolume: 5000 , comment: null },
+            { month: "2025-02", Product: "Product D", actualVolume: null, forcastedVolume: 4800 , comment: null },
+
+            { month: "2025-03", Product: "Product A", actualVolume: null, forcastedVolume: 4600 , comment: null },
+            { month: "2025-03", Product: "Product B", actualVolume: null, forcastedVolume: 4500 , comment: null },
+            { month: "2025-03", Product: "Product C", actualVolume: null, forcastedVolume: 5500 , comment: null },
+            { month: "2025-03", Product: "Product D", actualVolume: null, forcastedVolume: 4500 , comment: null },
+
+            { month: "2025-04", Product: "Product A", actualVolume: null, forcastedVolume: 4700 , comment: null },
+            { month: "2025-04", Product: "Product B", actualVolume: null, forcastedVolume: 5700 , comment: null },
+            { month: "2025-04", Product: "Product C", actualVolume: null, forcastedVolume: 5700 , comment: null },
+            { month: "2025-04", Product: "Product D", actualVolume: null, forcastedVolume: 5000 , comment: null },
+
+            { month: "2025-05", Product: "Product A", actualVolume: null, forcastedVolume: 3000 , comment: "Gilead products will be moved to generic" },
+            { month: "2025-05", Product: "Product B", actualVolume: null, forcastedVolume: 6000 , comment: null },
+            { month: "2025-05", Product: "Product C", actualVolume: null, forcastedVolume: 6200 , comment: null },
+            { month: "2025-05", Product: "Product D", actualVolume: null, forcastedVolume: 5000 , comment: null },
+
+            { month: "2025-06", Product: "Product A", actualVolume: null, forcastedVolume: 3200 , comment: null },
+            { month: "2025-06", Product: "Product B", actualVolume: null, forcastedVolume: 5200 , comment: null },
+            { month: "2025-06", Product: "Product C", actualVolume: null, forcastedVolume: 6200 , comment: null },
+            { month: "2025-06", Product: "Product D", actualVolume: null, forcastedVolume: 4600 , comment: null },
+
+            { month: "2025-07", Product: "Product A", actualVolume: null, forcastedVolume: 3500 , comment: null },
+            { month: "2025-07", Product: "Product B", actualVolume: null, forcastedVolume: 5500 , comment: null },
+            { month: "2025-07", Product: "Product C", actualVolume: null, forcastedVolume: 5700 , comment: null },
+            { month: "2025-07", Product: "Product D", actualVolume: null, forcastedVolume: 4500 , comment: null },
+
+            { month: "2025-08", Product: "Product A", actualVolume: null, forcastedVolume: 3500 , comment: null },
+            { month: "2025-08", Product: "Product B", actualVolume: null, forcastedVolume: 5800 , comment: null },
+            { month: "2025-08", Product: "Product C", actualVolume: null, forcastedVolume: 5200 , comment: null },
+            { month: "2025-08", Product: "Product D", actualVolume: null, forcastedVolume: 4800 , comment: null },
+
+            { month: "2025-09", Product: "Product A", actualVolume: null, forcastedVolume: 3400 , comment: null },
+            { month: "2025-09", Product: "Product B", actualVolume: null, forcastedVolume: 6000 , comment: null },
+            { month: "2025-09", Product: "Product C", actualVolume: null, forcastedVolume: 4500 , comment: null },
+            { month: "2025-09", Product: "Product D", actualVolume: null, forcastedVolume: 5600 , comment: null },
+
+            { month: "2025-10", Product: "Product A", actualVolume: null, forcastedVolume: 3200 , comment: null },
+            { month: "2025-10", Product: "Product B", actualVolume: null, forcastedVolume: 5600 , comment: null },
+            { month: "2025-10", Product: "Product C", actualVolume: null, forcastedVolume: 4200 , comment: null },
+            { month: "2025-10", Product: "Product D", actualVolume: null, forcastedVolume: 6000 , comment: null },
+
+            { month: "2025-11", Product: "Product A", actualVolume: null, forcastedVolume: 3500 , comment: null },
+            { month: "2025-11", Product: "Product B", actualVolume: null, forcastedVolume: 5000 , comment: null },
+            { month: "2025-11", Product: "Product C", actualVolume: null, forcastedVolume: 4500 , comment: null },
+            { month: "2025-11", Product: "Product D", actualVolume: null, forcastedVolume: 5500 , comment: null },
+
+            { month: "2025-12", Product: "Product A", actualVolume: null, forcastedVolume: 4000 , comment: null },
+            { month: "2025-12", Product: "Product B", actualVolume: null, forcastedVolume: 5400 , comment: null },
+            { month: "2025-12", Product: "Product C", actualVolume: null, forcastedVolume: 4500 , comment: null },
+            { month: "2025-12", Product: "Product D", actualVolume: null, forcastedVolume: 5800 , comment: null },
+
+
+            { month: "2026-01", Product: "Product A", actualVolume: null, forcastedVolume: 4200 , comment: null },
+            { month: "2026-01", Product: "Product B", actualVolume: null, forcastedVolume: 5600 , comment: null },
+            { month: "2026-01", Product: "Product C", actualVolume: null, forcastedVolume: 4600 , comment: null },
+            { month: "2026-01", Product: "Product D", actualVolume: null, forcastedVolume: 5200 , comment: null },
+
+            { month: "2026-02", Product: "Product A", actualVolume: null, forcastedVolume: 4200 , comment: null },
+            { month: "2026-02", Product: "Product B", actualVolume: null, forcastedVolume: 5600 , comment: null },
+            { month: "2026-02", Product: "Product C", actualVolume: null, forcastedVolume: 5000 , comment: null },
+            { month: "2026-02", Product: "Product D", actualVolume: null, forcastedVolume: 5400 , comment: null },
+
+            { month: "2026-03", Product: "Product A", actualVolume: null, forcastedVolume: 4000 , comment: null },
+            { month: "2026-03", Product: "Product B", actualVolume: null, forcastedVolume: 5700 , comment: null },
+            { month: "2026-03", Product: "Product C", actualVolume: null, forcastedVolume: 5300 , comment: null },
+            { month: "2026-03", Product: "Product D", actualVolume: null, forcastedVolume: 5500 , comment: null },
+
+            { month: "2026-04", Product: "Product A", actualVolume: null, forcastedVolume: 4400 , comment: null },
+            { month: "2026-04", Product: "Product B", actualVolume: null, forcastedVolume: 5900 , comment: null },
+            { month: "2026-04", Product: "Product C", actualVolume: null, forcastedVolume: 5200 , comment: null },
+            { month: "2026-04", Product: "Product D", actualVolume: null, forcastedVolume: 5600 , comment: null },
+
+            { month: "2026-05", Product: "Product A", actualVolume: null, forcastedVolume: 4800 , comment: null },
+            { month: "2026-05", Product: "Product B", actualVolume: null, forcastedVolume: 5800 , comment: null },
+            { month: "2026-05", Product: "Product C", actualVolume: null, forcastedVolume: 5000 , comment: null },
+            { month: "2026-05", Product: "Product D", actualVolume: null, forcastedVolume: 5700 , comment: null },
+
+            { month: "2026-06", Product: "Product A", actualVolume: null, forcastedVolume: 4700 , comment: null },
+            { month: "2026-06", Product: "Product B", actualVolume: null, forcastedVolume: 6000 , comment: null },
+            { month: "2026-06", Product: "Product C", actualVolume: null, forcastedVolume: 5200 , comment: null },
+            { month: "2026-06", Product: "Product D", actualVolume: null, forcastedVolume: 5700 , comment: null },
+
+            { month: "2026-07", Product: "Product A", actualVolume: null, forcastedVolume: 4800 , comment: null },
+            { month: "2026-07", Product: "Product B", actualVolume: null, forcastedVolume: 6200 , comment: null },
+            { month: "2026-07", Product: "Product C", actualVolume: null, forcastedVolume: 5200 , comment: null },
+            { month: "2026-07", Product: "Product D", actualVolume: null, forcastedVolume: 5500 , comment: null },
+
+            { month: "2026-08", Product: "Product A", actualVolume: null, forcastedVolume: 4900 , comment: null },
+            { month: "2026-08", Product: "Product B", actualVolume: null, forcastedVolume: 6700 , comment: null },
+            { month: "2026-08", Product: "Product C", actualVolume: null, forcastedVolume: 5400 , comment: null },
+            { month: "2026-08", Product: "Product D", actualVolume: null, forcastedVolume: 5400 , comment: null },
+
+            { month: "2026-09", Product: "Product A", actualVolume: null, forcastedVolume: 5500 , comment: null },
+            { month: "2026-09", Product: "Product B", actualVolume: null, forcastedVolume: 6900 , comment: null },
+            { month: "2026-09", Product: "Product C", actualVolume: null, forcastedVolume: 5900 , comment: null },
+            { month: "2026-09", Product: "Product D", actualVolume: null, forcastedVolume: 5800 , comment: null },
+
+            { month: "2026-10", Product: "Product A", actualVolume: null, forcastedVolume: 5600 , comment: null },
+            { month: "2026-10", Product: "Product B", actualVolume: null, forcastedVolume: 6900 , comment: null },
+            { month: "2026-10", Product: "Product C", actualVolume: null, forcastedVolume: 5900 , comment: null },
+            { month: "2026-10", Product: "Product D", actualVolume: null, forcastedVolume: 5500 , comment: null },
+
+            { month: "2026-11", Product: "Product A", actualVolume: null, forcastedVolume: 5700 , comment: null },
+            { month: "2026-11", Product: "Product B", actualVolume: null, forcastedVolume: 6700 , comment: null },
+            { month: "2026-11", Product: "Product C", actualVolume: null, forcastedVolume: 5800 , comment: null },
+            { month: "2026-11", Product: "Product D", actualVolume: null, forcastedVolume: 5400 , comment: null },
+
+            { month: "2026-12", Product: "Product A", actualVolume: null, forcastedVolume: 5900 , comment: null },
+            { month: "2026-12", Product: "Product B", actualVolume: null, forcastedVolume: 7200 , comment: null },
+            { month: "2026-12", Product: "Product C", actualVolume: null, forcastedVolume: 6200 , comment: null },
+            { month: "2026-12", Product: "Product D", actualVolume: null, forcastedVolume: 5800 , comment: null },
+ 
+        ];
+
+        const months = [...new Set(data.map(item => item.month))];
+
+        const formattedMonths = months.map(month => {
+            const [year, monthNum] = month.split('-');
+            const date = new Date(year, monthNum - 1);
+            return date.toLocaleString('default', { month: 'short', year: '2-digit' });
+        });
+
+        const Products = [...new Set(data.map(item => item.Product))];
+
+        const ProductColors = {
+            "Product A": "#FF6384",
+            "Product B": "#36A2EB",
+            "Product C": "#FFCE56",
+            "Product D": "#4BC0C0"
+        };
+
+        const datasetsActual = Products.map(Product => ({
+            label: `${Product} - Actual Volume`,
+            data: Array(months.length).fill(null),
+            borderColor: ProductColors[Product],
+            borderWidth: 2.5,
+            fill: false,
+            tension: 0.1,
+            spanGaps: true,
+            pointRadius: (ctx) => {
+                const index = ctx.dataIndex;
+                //const month = months[index]?.split('-')[1];
+                const [year, month] = months[index]?.split('-') || [];  // Extract the month part
+                    return month === '01' || year ==='2024' && month === '12' ? 3 : 0; // Show dot for January and December
+                },
+        }));
+
+        const datasetsForecasted = Products.map(Product => ({
+            label: `${Product} - Forecasted Volume`,
+            data: Array(months.length).fill(null),
+            borderColor: ProductColors[Product],
+            borderWidth: 2.5,
+            borderDash: [5, 5],
+            fill: false,
+            tension: 0.3,
+            spanGaps: true,
+            pointRadius: (ctx) => {
+                const index = ctx.dataIndex;
+                const [year, month] = months[index]?.split('-') || []; // Extract the month part
+                    return month === '01' || year==='2026' && month === '12' ? 3 : 0; // Show dot for January and December
+                },
+        }));
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+        let isPaused = false; // Track whether the chart animation is paused
+
+        const backgroundPlugin = {
+                id: 'backgroundColorPlugin',
+
+                beforeDraw: (chart) => {
+                    const ctx = chart.ctx;
+                    const { chartArea, scales } = chart;
+                            
+                    // Clear the existing background
+                    ctx.save();
+                    ctx.fillStyle = 'white'; 
+                    ctx.fillRect(chartArea.left, chartArea.top, chartArea.width, chartArea.height);
+
+                    const monthsPerYear = 12; 
+                    const totalMonths = months.length;
+
+                    let startX = chartArea.left;
+
+                    for (let i = 0; i < totalMonths; i += monthsPerYear) {
+                        const [year, month] = months[i]?.split('-') || [];
+                        if (!year) continue;
+
+                        
+                        const color = parseInt(year) % 2 === 0 ? '#edf0f2' : '#dee1e3'; 
+
+                        const endX = scales.x.getPixelForValue(i + monthsPerYear) || chartArea.right;
+
+                        ctx.fillStyle = color;
+                        ctx.fillRect(startX, chartArea.top, endX - startX, chartArea.height);
+
+                        startX = endX;
+                    }
+
+                    ctx.restore();
+                },
+
+            };
+
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: formattedMonths,
+                datasets: [...datasetsActual, ...datasetsForecasted]
+            },
+            options: {
+                responsive: true,
+                animation: {
+                    duration: 50, // Duration of the animation
+                    easing: 'linear',
+                    onProgress: function (animation) {
+                        // Optional callback during animation
+                    },
+                    onComplete: function () {
+                        // Optional callback after animation completes
+                        console.log('Animation complete!');
+                    },
+                    from: 'active',
+
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: false,
+                            text: 'Month',
+                            font: {size: 18    }
+                        },
+                        ticks: {
+                            font: {
+                                    size: 14, weight:'bold'
+                                },
+                                autoSkip: false,
+                                callback: (value, index) => {
+                                    const month = months[index];
+                                    if (!month) return '';
+                                    const [year, monthNum] = month.split('-');
+                                    if (monthNum === '01' && year!='2023') {
+                                        return year-1;
+                                    }else if (monthNum === '12' & year === '2026'){
+                                        return year;
+                                    }
+                                    return '';
+                                },
+                                maxRotation: 0,
+                                minRotation: 0
+                        },
+                        grid: {
+                            display: false,
+                            drawOnChartArea: true,  
+                            borderDash: [5, 5],  
+                            borderColor:'black',
+                        },
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Volume',
+                            font: {size: 18}
+                        },
+                        ticks: {
+                            font: {size: 14}
+                        },
+                        border: {
+                            dash: [2,4],
+                        },
+                        ticks: {
+                            borderColor: 'black',  // Set color of ticks (vertical lines on the x-axis)
+                            borderWidth: 2         // Set width of tick marks
+                        },
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: {size: 10},
+                            boxWidth: 40,
+                        }
+                    },
+                    annotation: {
+                        annotations: {}
+                    }
+                },
+                
+                onClick: (e) => {
+                    isPaused = !isPaused; // Toggle pause state
+                    if (!isPaused) {
+                        updateChart(); // Resume animation
+                    }
+                }
+            },
+            plugins: [backgroundPlugin] 
+
+        });
+
+        let currentMonthIndex = 0;
+
+        async function updateChart() {
+            if (currentMonthIndex >= months.length || isPaused) return; // Stop if paused or at the end
+
+            let dataChanged = false; // Track if data has changed
+            let annotationChanged = false; // Track if annotations have changed
+
+            chart.data.datasets.forEach(dataset => {
+                const Product = dataset.label.split(" - ")[0];
+                const entry = data.find(item => item.Product === Product && item.month === months[currentMonthIndex]);
+                const newValue = entry ? (dataset.label.includes("Actual") ? entry.actualVolume : entry.forcastedVolume) : null;
+
+                if (dataset.data[currentMonthIndex] !== newValue) {
+                    dataset.data[currentMonthIndex] = newValue; // Update only if there's a change
+                    dataChanged = true;
+                }
+            });
+
+            // Handle annotations for the current month
+            const currentMonthComments = data.filter(
+                item => item.month === months[currentMonthIndex] && item.comment
+            );
+
+            currentMonthComments.forEach(item => {
+                const annotationKey = item.Product;
+                const newAnnotation = {
+                    type: 'label',
+                    xValue: formattedMonths[currentMonthIndex],
+                    yValue: (item.actualVolume || item.forcastedVolume) - 400,
+                    backgroundColor: ProductColors[item.Product],
+                    opacity: 0.5,
+                    content: item.comment,
+                    position: 'top',
+                    font: { size: 12, weight: 'bold' },
+                    color: 'white',
+                };
+
+                if (JSON.stringify(chart.options.plugins.annotation.annotations[annotationKey]) !== JSON.stringify(newAnnotation)) {
+                    chart.options.plugins.annotation.annotations[annotationKey] = newAnnotation; // Update only if there's a change
+                    annotationChanged = true;
+                }
+            });
+
+            // Update the chart only if necessary
+            if (dataChanged || annotationChanged) {
+                chart.update('none'); // Use 'none' to suppress animations and prevent blinking
+            }
+
+            // Conditionally pause for comments
+            if (currentMonthComments.length > 0) {
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Pause for 1 second
+            }
+
+            currentMonthIndex++;
+            if (!isPaused) {
+                setTimeout(updateChart, 200); // Continue updating if not paused
+            }
+        }
+
+        // Start the animation
+        updateChart();
+
+
+    </script>
+</body>
+</html>
